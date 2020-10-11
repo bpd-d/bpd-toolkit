@@ -1,3 +1,4 @@
+export declare const BPD_TOOLKIT_VERSION = "0.1.2";
 /**
  * Checks if value is undefined
  * @param val value
@@ -84,3 +85,20 @@ export declare function hasFunction(obj: any, fName: string): boolean;
  * @param callback Callback to be invoked for each property
  */
 export declare function enumerateObject(object: any, callback: (property: string, value: any) => void): void;
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export declare class Debounce {
+    #private;
+    constructor(callback: (...args: any[]) => void, delay: number);
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args: any[]): void;
+    /**
+     * Cancels current callback invokation
+     */
+    cancel(): void;
+}

@@ -100,6 +100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BPD_TOOLKIT_VERSION", function() { return BPD_TOOLKIT_VERSION; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isUndefined", function() { return isUndefined; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isNull", function() { return isNull; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "is", function() { return is; });
@@ -115,6 +116,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasProperty", function() { return hasProperty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasFunction", function() { return hasFunction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enumerateObject", function() { return enumerateObject; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Debounce", function() { return Debounce; });
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _id, _delay, _callback;
+const BPD_TOOLKIT_VERSION = "0.1.2";
 /**
  * Checks if value is undefined
  * @param val value
@@ -298,6 +315,41 @@ function enumerateObject(object, callback) {
 function jsonify(attribute) {
     return attribute && attribute.length > 0 ? JSON.parse(attribute) : {};
 }
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+class Debounce {
+    constructor(callback, delay) {
+        _id.set(this, void 0);
+        _delay.set(this, void 0);
+        _callback.set(this, void 0);
+        __classPrivateFieldSet(this, _id, null);
+        __classPrivateFieldSet(this, _delay, delay);
+        __classPrivateFieldSet(this, _callback, callback);
+    }
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args) {
+        this.cancel();
+        __classPrivateFieldSet(this, _id, setTimeout(() => {
+            __classPrivateFieldGet(this, _callback).call(this, ...args);
+            __classPrivateFieldSet(this, _id, null);
+        }, __classPrivateFieldGet(this, _delay)));
+    }
+    /**
+     * Cancels current callback invokation
+     */
+    cancel() {
+        if (__classPrivateFieldGet(this, _id)) {
+            clearTimeout(__classPrivateFieldGet(this, _id));
+            __classPrivateFieldSet(this, _id, null);
+        }
+    }
+}
+_id = new WeakMap(), _delay = new WeakMap(), _callback = new WeakMap();
 
 
 /***/ })

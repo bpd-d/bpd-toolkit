@@ -1,3 +1,4 @@
+export const BPD_TOOLKIT_VERSION = "0.1.3";
 /**
  * Checks if value is undefined
  * @param val value
@@ -197,4 +198,40 @@ export function enumerateObject(object: any, callback: (property: string, value:
  */
 function jsonify(attribute: string): any {
     return attribute && attribute.length > 0 ? JSON.parse(attribute) : {}
+}
+
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export class Debounce {
+    #id: any;
+    #delay: number;
+    #callback: (...args: any[]) => void;
+    constructor(callback: (...args: any[]) => void, delay: number) {
+        this.#id = null;
+        this.#delay = delay;
+        this.#callback = callback;
+    }
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args: any[]) {
+        this.cancel();
+        this.#id = setTimeout(() => {
+            this.#callback(...args);
+            this.#id = null;
+        }, this.#delay)
+    }
+
+    /**
+     * Cancels current callback invokation
+     */
+    cancel() {
+        if (this.#id) {
+            clearTimeout(this.#id);
+            this.#id = null;
+        }
+    }
 }

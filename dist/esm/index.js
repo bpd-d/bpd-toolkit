@@ -1,3 +1,18 @@
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _id, _delay, _callback;
+export const BPD_TOOLKIT_VERSION = "0.1.2";
 /**
  * Checks if value is undefined
  * @param val value
@@ -181,3 +196,38 @@ export function enumerateObject(object, callback) {
 function jsonify(attribute) {
     return attribute && attribute.length > 0 ? JSON.parse(attribute) : {};
 }
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export class Debounce {
+    constructor(callback, delay) {
+        _id.set(this, void 0);
+        _delay.set(this, void 0);
+        _callback.set(this, void 0);
+        __classPrivateFieldSet(this, _id, null);
+        __classPrivateFieldSet(this, _delay, delay);
+        __classPrivateFieldSet(this, _callback, callback);
+    }
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args) {
+        this.cancel();
+        __classPrivateFieldSet(this, _id, setTimeout(() => {
+            __classPrivateFieldGet(this, _callback).call(this, ...args);
+            __classPrivateFieldSet(this, _id, null);
+        }, __classPrivateFieldGet(this, _delay)));
+    }
+    /**
+     * Cancels current callback invokation
+     */
+    cancel() {
+        if (__classPrivateFieldGet(this, _id)) {
+            clearTimeout(__classPrivateFieldGet(this, _id));
+            __classPrivateFieldSet(this, _id, null);
+        }
+    }
+}
+_id = new WeakMap(), _delay = new WeakMap(), _callback = new WeakMap();

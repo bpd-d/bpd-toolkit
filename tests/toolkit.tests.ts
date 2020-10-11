@@ -1,4 +1,4 @@
-import { are, clone, counter, createElementFromString, enumerateObject, getRangeValue, hasFunction, is, isInRange } from "../src/index"
+import { are, clone, counter, createElementFromString, Debounce, enumerateObject, getRangeValue, hasFunction, is, isInRange, sleep } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -206,5 +206,43 @@ describe("Tests checking method [counter]", function () {
 
         expect(val).toEqual(0);
         expect(val2).toEqual(1);
+    })
+})
+
+
+describe("Tests checking class [Debounce]", function () {
+    it("No arguments", async function () {
+        let val = null;
+        let debounce = new Debounce(() => {
+            val = "XXX"
+        }, 100);
+        debounce.call();
+        await sleep(110);
+
+        expect(val).toEqual("XXX");
+    })
+
+    it("With argument", async function () {
+        let val = null;
+        let debounce = new Debounce((arg: string) => {
+            val = arg
+        }, 100);
+        debounce.call("XXX");
+        await sleep(110);
+
+        expect(val).toEqual("XXX");
+    })
+
+    it("Mulitple calls with argument", async function () {
+        let val = null;
+        let debounce = new Debounce((arg: string) => {
+            val = arg
+        }, 100);
+        debounce.call("XXX");
+        await sleep(50);
+        debounce.call("YYY");
+        await sleep(110);
+
+        expect(val).toEqual("YYY");
     })
 })

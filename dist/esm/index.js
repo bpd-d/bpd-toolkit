@@ -11,8 +11,8 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     }
     return privateMap.get(receiver);
 };
-var _id, _delay, _callback;
-export const BPD_TOOLKIT_VERSION = "0.1.2";
+var _id, _delay, _callback, _id_1, _delay_1, _callback_1;
+export const BPD_TOOLKIT_VERSION = "0.1.3";
 /**
  * Checks if value is undefined
  * @param val value
@@ -231,3 +231,145 @@ export class Debounce {
     }
 }
 _id = new WeakMap(), _delay = new WeakMap(), _callback = new WeakMap();
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export class Throttle {
+    constructor(callback, delay) {
+        _id_1.set(this, void 0);
+        _delay_1.set(this, void 0);
+        _callback_1.set(this, void 0);
+        __classPrivateFieldSet(this, _id_1, null);
+        __classPrivateFieldSet(this, _delay_1, delay);
+        __classPrivateFieldSet(this, _callback_1, callback);
+    }
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args) {
+        if (__classPrivateFieldGet(this, _id_1) === null) {
+            __classPrivateFieldGet(this, _callback_1).call(this, ...args);
+            __classPrivateFieldSet(this, _id_1, setTimeout(() => {
+                __classPrivateFieldSet(this, _id_1, null);
+            }, __classPrivateFieldGet(this, _delay_1)));
+        }
+    }
+    /**
+     * Cancels current callback invokation
+     */
+    cancel() {
+        if (__classPrivateFieldGet(this, _id_1) !== null) {
+            clearTimeout(__classPrivateFieldGet(this, _id_1));
+            __classPrivateFieldSet(this, _id_1, null);
+        }
+    }
+}
+_id_1 = new WeakMap(), _delay_1 = new WeakMap(), _callback_1 = new WeakMap();
+/**
+ * Creates new function that invokes orginal one but with time limit
+ * Orignal callback will not be invoke more often every time specified in second argument
+ * @param callback - callback to execute
+ * @param throttleTime - time in ms during which callback cannot be executed
+ * @returns cancellation funtion
+ */
+export function throttle(callback, throttleTime) {
+    let id = null;
+    return function (...args) {
+        if (id === null) {
+            try {
+                callback(...args);
+                id = setTimeout(() => {
+                    id = null;
+                }, throttleTime);
+            }
+            catch (e) {
+                id = null;
+                console.log(e);
+            }
+        }
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+                id = null;
+            }
+        };
+    };
+}
+/**
+ * Block next callback executions until current finishes by returning an error if current is in progress
+ * @param callback - callback to execute
+ * @returns Promise that executes callback or throws error when is locked
+ */
+export function throttleAsync(callback) {
+    let locked = false;
+    return function (...args) {
+        if (!locked) {
+            locked = true;
+            return new Promise((resolve, reject) => {
+                try {
+                    resolve(callback(...args));
+                }
+                catch (e) {
+                    reject(e);
+                }
+                finally {
+                    locked = false;
+                }
+            });
+        }
+        else {
+            return new Promise((resolve, reject) => {
+                reject(new Error("Execution is currently locked"));
+            });
+        }
+    };
+}
+/**
+* Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
+ * @param callback - callback to execute
+ * @param debounceTime - time amount in ms that execution shall be delayed by
+ * @returns cancellation function
+ */
+export function debounce(callback, debounceTime) {
+    let id = null;
+    return function (...args) {
+        if (id != null) {
+            clearTimeout(id);
+            id = null;
+        }
+        id = setTimeout(() => {
+            callback(...args);
+            id = null;
+        }, debounceTime);
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+            }
+        };
+    };
+}
+/**
+ * Delays callback execution by specific time. Callback cannot be called again until previous execution finishes or was cancelled
+ * @param callback - callback to execute
+ * @param delayTime - time in ms that execution shall be delayed by
+ * @returns Cancel callback
+ */
+export function delay(callback, delayTime) {
+    let id = null;
+    return function (...args) {
+        if (id === null) {
+            id = setTimeout(() => {
+                callback(...args);
+                id = null;
+            }, delayTime);
+        }
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+                id = null;
+            }
+        };
+    };
+}

@@ -1,7 +1,7 @@
 # bpd-toolkit
 Set of handy functions and shorthands
 
-Functions:
+## Functions:
 * isUndefined - (value) - check whether value is **undefined**
 * isNull - (value) - check whether value is **null**
 * is - (value, [typecheck = true]) - check whether value is not null or undefined. By default it also calls method **isEmpty**
@@ -17,3 +17,8 @@ Functions:
 * enumerateObject - (object, callback: (property, value)) - iterates through an object and calls callback for each property.
 * hasFunction - checks whether object has porperty and this property is an function
 * hasProperty - checks whether object has porperty
+
+## Specials
+* debounce - (callback, delay) - creates new, debounced function which delays callback execution by specific time. However if called again before current timeout finishes, current is cancelled and new timeout is created. Returns cancellation function. Useful in search boxes.
+* throttle - (callback, delay) - invokes callback and then block next executions by specific time or until is cancelled. Returns cancellation function. Useful to block mulitple calls performed in short period of time
+* delay - (callback, delay) - delay callback execution by specific time. Return cancellation function.

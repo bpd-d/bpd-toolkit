@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.3";
+export const BPD_TOOLKIT_VERSION = "0.1.4";
 /**
  * Checks if value is undefined
  * @param val value
@@ -232,6 +232,150 @@ export class Debounce {
         if (this.#id) {
             clearTimeout(this.#id);
             this.#id = null;
+        }
+    }
+}
+
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export class Throttle {
+    #id: any;
+    #delay: number;
+    #callback: (...args: any[]) => void;
+    constructor(callback: (...args: any[]) => void, delay: number) {
+        this.#id = null;
+        this.#delay = delay;
+        this.#callback = callback;
+    }
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args: any[]) {
+        if (this.#id === null) {
+            this.#callback(...args);
+            this.#id = setTimeout(() => {
+                this.#id = null;
+            }, this.#delay)
+        }
+    }
+
+    /**
+     * Cancels current callback invokation
+     */
+    cancel() {
+        if (this.#id !== null) {
+            clearTimeout(this.#id);
+            this.#id = null;
+        }
+    }
+}
+
+
+/**
+ * Creates new function that invokes orginal one but with time limit
+ * Orignal callback will not be invoke more often every time specified in second argument
+ * @param callback - callback to execute
+ * @param throttleTime - time in ms during which callback cannot be executed
+ * @returns cancellation funtion
+ */
+export function throttle(callback: (...args: any[]) => void, throttleTime: number) {
+    let id: any = null;
+    return function (...args: any[]) {
+        if (id === null) {
+            try {
+                callback(...args)
+                id = setTimeout(() => {
+                    id = null;
+                }, throttleTime)
+            } catch (e) {
+                id = null;
+                console.log(e);
+            }
+        }
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+                id = null;
+            }
+        }
+    }
+}
+
+/**
+ * Block next callback executions until current finishes by returning an error if current is in progress
+ * @param callback - callback to execute
+ * @returns Promise that executes callback or throws error when is locked
+ */
+export function throttleAsync<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T> {
+    let locked = false;
+    return function (...args: any[]) {
+        if (!locked) {
+            locked = true;
+            return new Promise((resolve, reject) => {
+                try {
+                    resolve(callback(...args));
+                } catch (e) {
+                    reject(e);
+                } finally {
+                    locked = false;
+                }
+            })
+        } else {
+            return new Promise((resolve, reject) => {
+                reject(new Error("Execution is currently locked"))
+            })
+        }
+    }
+}
+
+/**
+* Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
+ * @param callback - callback to execute
+ * @param debounceTime - time amount in ms that execution shall be delayed by
+ * @returns cancellation function
+ */
+export function debounce(callback: (...args: any[]) => void, debounceTime: number) {
+    let id: any = null;
+    return function (...args: any[]) {
+        if (id != null) {
+            clearTimeout(id)
+            id = null;
+        }
+        id = setTimeout(() => {
+            callback(...args)
+            id = null;
+        }, debounceTime)
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+            }
+        }
+    }
+}
+
+/**
+ * Delays callback execution by specific time. Callback cannot be called again until previous execution finishes or was cancelled
+ * @param callback - callback to execute
+ * @param delayTime - time in ms that execution shall be delayed by
+ * @returns Cancel callback
+ */
+export function delay(callback: (...args: any[]) => void, delayTime: number) {
+    let id: any = null;
+    return function (...args: any[]) {
+        if (id === null) {
+            id = setTimeout(() => {
+                callback(...args);
+                id = null;
+            }, delayTime)
+        }
+        return function () {
+            if (id !== null) {
+                clearTimeout(id);
+                id = null;
+            }
         }
     }
 }

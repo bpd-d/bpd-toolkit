@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.2";
+export declare const BPD_TOOLKIT_VERSION = "0.1.3";
 /**
  * Checks if value is undefined
  * @param val value
@@ -102,3 +102,48 @@ export declare class Debounce {
      */
     cancel(): void;
 }
+/**
+ * Calls function after specific timeout.
+ * If function is called again, timer resets
+ */
+export declare class Throttle {
+    #private;
+    constructor(callback: (...args: any[]) => void, delay: number);
+    /**
+     * Creates timeout ending with callback inokation, cancels current timeout
+     * @param args Function args
+     */
+    call(...args: any[]): void;
+    /**
+     * Cancels current callback invokation
+     */
+    cancel(): void;
+}
+/**
+ * Creates new function that invokes orginal one but with time limit
+ * Orignal callback will not be invoke more often every time specified in second argument
+ * @param callback - callback to execute
+ * @param throttleTime - time in ms during which callback cannot be executed
+ * @returns cancellation funtion
+ */
+export declare function throttle(callback: (...args: any[]) => void, throttleTime: number): (...args: any[]) => () => void;
+/**
+ * Block next callback executions until current finishes by returning an error if current is in progress
+ * @param callback - callback to execute
+ * @returns Promise that executes callback or throws error when is locked
+ */
+export declare function throttleAsync<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;
+/**
+* Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
+ * @param callback - callback to execute
+ * @param debounceTime - time amount in ms that execution shall be delayed by
+ * @returns cancellation function
+ */
+export declare function debounce(callback: (...args: any[]) => void, debounceTime: number): (...args: any[]) => () => void;
+/**
+ * Delays callback execution by specific time. Callback cannot be called again until previous execution finishes or was cancelled
+ * @param callback - callback to execute
+ * @param delayTime - time in ms that execution shall be delayed by
+ * @returns Cancel callback
+ */
+export declare function delay(callback: (...args: any[]) => void, delayTime: number): (...args: any[]) => () => void;

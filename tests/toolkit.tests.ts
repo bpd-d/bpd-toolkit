@@ -1,4 +1,4 @@
-import { are, clone, counter, createElementFromString, Debounce, enumerateObject, getRangeValue, hasFunction, is, isInRange, sleep } from "../src/index"
+import { are, clone, counter, createElementFromString, debounce, Debounce, enumerateObject, getRangeValue, hasFunction, is, isInRange, sleep, Throttle, throttle, throttleAsync } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -233,6 +233,17 @@ describe("Tests checking class [Debounce]", function () {
         expect(val).toEqual("XXX");
     })
 
+    it("With argument and cancel", async function () {
+        let val = null;
+        let debounce = new Debounce((arg: string) => {
+            val = arg
+        }, 100);
+        debounce.call("XXX");
+        await sleep(10);
+        debounce.cancel();
+        expect(val).toEqual(null);
+    })
+
     it("Mulitple calls with argument", async function () {
         let val = null;
         let debounce = new Debounce((arg: string) => {
@@ -244,5 +255,174 @@ describe("Tests checking class [Debounce]", function () {
         await sleep(110);
 
         expect(val).toEqual("YYY");
+    })
+})
+
+describe("Tests checking function [debounce]", function () {
+    it("No arguments", async function () {
+        let val = null;
+        let debounced = debounce(() => {
+            val = "XXX"
+        }, 100);
+        debounced();
+        await sleep(110);
+        expect(val).toEqual("XXX");
+    })
+
+    it("With argument", async function () {
+        let val = null;
+        let debounced = debounce((arg: string) => {
+            val = arg
+        }, 100);
+        debounced("XXX");
+        await sleep(110);
+
+        expect(val).toEqual("XXX");
+    })
+
+    it("With argument and cancel", async function () {
+        let val = null;
+        let debounced = debounce((arg: string) => {
+            val = arg
+        }, 100);
+        let cancel = debounced("XXX");
+        await sleep(10);
+        cancel();
+        expect(val).toEqual(null);
+    })
+
+    it("Mulitple calls with argument", async function () {
+        let val = null;
+        let debounced = debounce((arg: string) => {
+            val = arg
+        }, 100);
+        debounced("XXX");
+        await sleep(50);
+        debounced("YYY");
+        await sleep(110);
+
+        expect(val).toEqual("YYY");
+    })
+})
+
+describe("Tests checking method [throttle]", function () {
+    it("Normal case", function () {
+        let result = null;
+        let throttled = throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled("XXX")
+        expect(result).toEqual("XXX");
+    })
+
+    it("Two calls", async function () {
+        let result = null;
+        let throttled = throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled("XXX")
+        await sleep(110);
+        throttled("YYY")
+        expect(result).toEqual("YYY");
+    })
+
+    it("Two fast calls", async function () {
+        let result = null;
+        let throttled = throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled("XXX")
+        await sleep(10);
+        throttled("YYY")
+        expect(result).toEqual("XXX");
+    })
+
+    it("Two fast calls with cancel", async function () {
+        let result = null;
+        let throttled = throttle((text: string) => {
+            result = text;
+        }, 100)
+        let cancel = throttled("XXX")
+        await sleep(10);
+        cancel();
+        throttled("YYY")
+        expect(result).toEqual("YYY");
+    })
+})
+
+describe("Tests checking method [throttleAsync]", function () {
+    it("Normal case", async function () {
+        let result = null;
+        let throttled = throttleAsync((text: string) => {
+            return text;
+        })
+        result = await throttled("XXX");
+        expect(result).toEqual("XXX");
+    })
+
+    it("Two calls at the same time", async function () {
+        let result = null;
+        let error = false;
+        let throttled = throttleAsync((text: string) => {
+            return text;
+        })
+        throttled("XXX").then((res) => {
+            result = res;
+        });
+        throttled("YYY").then((res) => {
+            result = res;
+        }).catch(e => {
+            error = true;
+        });
+        await sleep(30);
+        expect(result).toEqual("YYY");
+        expect(error).toEqual(false);
+    })
+
+})
+
+
+describe("Tests checking class [Throttle]", function () {
+    it("Normal case", function () {
+        let result = null;
+        let throttled = new Throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled.call("XXX")
+        expect(result).toEqual("XXX");
+    })
+
+    it("Two calls", async function () {
+        let result = null;
+        let throttled = new Throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled.call("XXX")
+        await sleep(110);
+        throttled.call("YYY")
+        expect(result).toEqual("YYY");
+    })
+
+    it("Two fast calls", async function () {
+        let result = null;
+        let throttled = new Throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled.call("XXX")
+        await sleep(10);
+        throttled.call("YYY")
+        expect(result).toEqual("XXX");
+    })
+
+    it("Two fast calls with cancel", async function () {
+        let result = null;
+        let throttled = new Throttle((text: string) => {
+            result = text;
+        }, 100)
+        throttled.call("XXX")
+        await sleep(10);
+        throttled.cancel();
+        throttled.call("YYY")
+        expect(result).toEqual("YYY");
     })
 })

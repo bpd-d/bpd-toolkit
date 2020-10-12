@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.3";
+export declare const BPD_TOOLKIT_VERSION = "0.1.4";
 /**
  * Checks if value is undefined
  * @param val value
@@ -67,6 +67,7 @@ export declare function parseJsonString(attribute: string): any | null;
  * Number generator
  */
 export declare function counter(): Generator<number, void, unknown>;
+export declare function Counter(prefix?: string): () => string;
 /**
  * Checks whether property exists
  * @param obj - object
@@ -80,11 +81,18 @@ export declare function hasProperty(obj: any, fName: string): boolean;
  */
 export declare function hasFunction(obj: any, fName: string): boolean;
 /**
- *
+ * Enumerate properties on the object an invokes callback for each one of them
  * @param object Object to enumarate
  * @param callback Callback to be invoked for each property
  */
 export declare function enumerateObject(object: any, callback: (property: string, value: any) => void): void;
+/**
+ * Creates new object from passed one by calling callback for each property. Result from callback is an input for next iteration
+ * @param object - input object
+ * @param callback - (currentResult, propertyName, propertyValue, currentIndex) - callback for execution
+ * @param initialValue - initial value of a result object
+ */
+export declare function reduceObject<T>(object: any, callback: (current: T, prop: string, value: any, index: number) => T, initialValue: T): T;
 /**
  * Calls function after specific timeout.
  * If function is called again, timer resets
@@ -147,3 +155,8 @@ export declare function debounce(callback: (...args: any[]) => void, debounceTim
  * @returns Cancel callback
  */
 export declare function delay(callback: (...args: any[]) => void, delayTime: number): (...args: any[]) => () => void;
+/**
+ * Creates function that once invoked returns a promise that executes original callback
+ * @param callback Callback to execute in promise
+ */
+export declare function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;

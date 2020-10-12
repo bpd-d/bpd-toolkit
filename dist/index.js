@@ -113,15 +113,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElementFromString", function() { return createElementFromString; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "parseJsonString", function() { return parseJsonString; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "counter", function() { return counter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Counter", function() { return Counter; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasProperty", function() { return hasProperty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "hasFunction", function() { return hasFunction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "enumerateObject", function() { return enumerateObject; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "reduceObject", function() { return reduceObject; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Debounce", function() { return Debounce; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Throttle", function() { return Throttle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "throttle", function() { return throttle; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "throttleAsync", function() { return throttleAsync; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "debounce", function() { return debounce; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "delay", function() { return delay; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "promisify", function() { return promisify; });
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
@@ -136,7 +139,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1;
-const BPD_TOOLKIT_VERSION = "0.1.3";
+const BPD_TOOLKIT_VERSION = "0.1.4";
 /**
  * Checks if value is undefined
  * @param val value
@@ -282,6 +285,13 @@ function* counter() {
         }
     }
 }
+function Counter(prefix) {
+    const c = counter();
+    return function () {
+        let next = c.next().value;
+        return prefix ? prefix + next : "" + next;
+    };
+}
 /**
  * Checks whether property exists
  * @param obj - object
@@ -299,7 +309,7 @@ function hasFunction(obj, fName) {
     return is(obj[fName]) && typeof obj[fName] === 'function';
 }
 /**
- *
+ * Enumerate properties on the object an invokes callback for each one of them
  * @param object Object to enumarate
  * @param callback Callback to be invoked for each property
  */
@@ -312,6 +322,26 @@ function enumerateObject(object, callback) {
             callback(prop, object[prop]);
         }
     }
+}
+/**
+ * Creates new object from passed one by calling callback for each property. Result from callback is an input for next iteration
+ * @param object - input object
+ * @param callback - (currentResult, propertyName, propertyValue, currentIndex) - callback for execution
+ * @param initialValue - initial value of a result object
+ */
+function reduceObject(object, callback, initialValue) {
+    if (!are(object, callback)) {
+        return initialValue;
+    }
+    let result = initialValue;
+    let counter = 0;
+    for (let prop in object) {
+        if (object.hasOwnProperty(prop)) {
+            result = callback(result, prop, object[prop], counter);
+            counter++;
+        }
+    }
+    return result;
 }
 /**
  * Creates object from JSON string
@@ -399,6 +429,9 @@ _id_1 = new WeakMap(), _delay_1 = new WeakMap(), _callback_1 = new WeakMap();
  * @returns cancellation funtion
  */
 function throttle(callback, throttleTime) {
+    if (!are(throttleTime, callback)) {
+        throw new Error("[thorttle]: Incorrect throttle arguments");
+    }
     let id = null;
     return function (...args) {
         if (id === null) {
@@ -427,6 +460,9 @@ function throttle(callback, throttleTime) {
  * @returns Promise that executes callback or throws error when is locked
  */
 function throttleAsync(callback) {
+    if (!is(callback)) {
+        throw new Error("[throttleAsync]: Provided callback is incorrect");
+    }
     let locked = false;
     return function (...args) {
         if (!locked) {
@@ -457,6 +493,9 @@ function throttleAsync(callback) {
  * @returns cancellation function
  */
 function debounce(callback, debounceTime) {
+    if (!are(callback, debounceTime)) {
+        throw new Error("[debounce]: Input arguments are not correct");
+    }
     let id = null;
     return function (...args) {
         if (id != null) {
@@ -481,6 +520,9 @@ function debounce(callback, debounceTime) {
  * @returns Cancel callback
  */
 function delay(callback, delayTime) {
+    if (!are(callback, delayTime)) {
+        throw new Error("[delay]: Input arguments are not correct");
+    }
     let id = null;
     return function (...args) {
         if (id === null) {
@@ -495,6 +537,25 @@ function delay(callback, delayTime) {
                 id = null;
             }
         };
+    };
+}
+/**
+ * Creates function that once invoked returns a promise that executes original callback
+ * @param callback Callback to execute in promise
+ */
+function promisify(callback) {
+    if (!is(callback)) {
+        throw new Error("[promisify]: Callback is incorrect");
+    }
+    return function (...args) {
+        return new Promise((resolve, reject) => {
+            try {
+                resolve(callback(...args));
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
     };
 }
 

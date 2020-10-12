@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.4";
+export const BPD_TOOLKIT_VERSION = "0.1.5";
 /**
  * Checks if value is undefined
  * @param val value
@@ -158,6 +158,14 @@ export function* counter() {
     }
 }
 
+export function Counter(prefix?: string): () => string {
+    const c = counter();
+    return function () {
+        let next = c.next().value
+        return prefix ? prefix + next : "" + next;
+    }
+}
+
 /**
  * Checks whether property exists
  * @param obj - object
@@ -177,7 +185,7 @@ export function hasFunction(obj: any, fName: string) {
 }
 
 /**
- * 
+ * Enumerate properties on the object an invokes callback for each one of them
  * @param object Object to enumarate
  * @param callback Callback to be invoked for each property
  */
@@ -190,6 +198,27 @@ export function enumerateObject(object: any, callback: (property: string, value:
             callback(prop, object[prop]);
         }
     }
+}
+
+/**
+ * Creates new object from passed one by calling callback for each property. Result from callback is an input for next iteration
+ * @param object - input object
+ * @param callback - (currentResult, propertyName, propertyValue, currentIndex) - callback for execution
+ * @param initialValue - initial value of a result object
+ */
+export function reduceObject<T>(object: any, callback: (current: T, prop: string, value: any, index: number) => T, initialValue: T): T {
+    if (!are(object, callback)) {
+        return initialValue;
+    }
+    let result = initialValue;
+    let counter = 0;
+    for (let prop in object) {
+        if (object.hasOwnProperty(prop)) {
+            result = callback(result, prop, object[prop], counter);
+            counter++;
+        }
+    }
+    return result;
 }
 
 /**
@@ -282,6 +311,9 @@ export class Throttle {
  * @returns cancellation funtion
  */
 export function throttle(callback: (...args: any[]) => void, throttleTime: number) {
+    if (!are(throttleTime, callback)) {
+        throw new Error("[thorttle]: Incorrect throttle arguments");
+    }
     let id: any = null;
     return function (...args: any[]) {
         if (id === null) {
@@ -310,6 +342,9 @@ export function throttle(callback: (...args: any[]) => void, throttleTime: numbe
  * @returns Promise that executes callback or throws error when is locked
  */
 export function throttleAsync<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T> {
+    if (!is(callback)) {
+        throw new Error("[throttleAsync]: Provided callback is incorrect")
+    }
     let locked = false;
     return function (...args: any[]) {
         if (!locked) {
@@ -338,6 +373,9 @@ export function throttleAsync<T>(callback: (...args: any[]) => T): (...args: any
  * @returns cancellation function
  */
 export function debounce(callback: (...args: any[]) => void, debounceTime: number) {
+    if (!are(callback, debounceTime)) {
+        throw new Error("[debounce]: Input arguments are not correct")
+    }
     let id: any = null;
     return function (...args: any[]) {
         if (id != null) {
@@ -363,6 +401,9 @@ export function debounce(callback: (...args: any[]) => void, debounceTime: numbe
  * @returns Cancel callback
  */
 export function delay(callback: (...args: any[]) => void, delayTime: number) {
+    if (!are(callback, delayTime)) {
+        throw new Error("[delay]: Input arguments are not correct")
+    }
     let id: any = null;
     return function (...args: any[]) {
         if (id === null) {
@@ -377,5 +418,24 @@ export function delay(callback: (...args: any[]) => void, delayTime: number) {
                 id = null;
             }
         }
+    }
+}
+
+/**
+ * Creates function that once invoked returns a promise that executes original callback
+ * @param callback Callback to execute in promise
+ */
+export function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T> {
+    if (!is(callback)) {
+        throw new Error("[promisify]: Callback is incorrect")
+    }
+    return function (...args: any[]) {
+        return new Promise((resolve, reject) => {
+            try {
+                resolve(callback(...args))
+            } catch (e) {
+                reject(e);
+            }
+        })
     }
 }

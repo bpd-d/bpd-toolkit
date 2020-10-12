@@ -1,5 +1,9 @@
 # bpd toolkit
-# [0.1.4] WIP
+# [0.1.5] WIP
+# [0.1.4] 2020-10-12
+* [Added] function **promisify**
+* [Added] function **reduceObject**
+* [Added] function **delay**
 # [0.1.3] 2020-10-11
 * [Added] Debounce function and class
 * [Added] Throttle function and class

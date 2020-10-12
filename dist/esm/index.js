@@ -12,7 +12,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1;
-export const BPD_TOOLKIT_VERSION = "0.1.3";
+export const BPD_TOOLKIT_VERSION = "0.1.4";
 /**
  * Checks if value is undefined
  * @param val value
@@ -158,6 +158,13 @@ export function* counter() {
         }
     }
 }
+export function Counter(prefix) {
+    const c = counter();
+    return function () {
+        let next = c.next().value;
+        return prefix ? prefix + next : "" + next;
+    };
+}
 /**
  * Checks whether property exists
  * @param obj - object
@@ -175,7 +182,7 @@ export function hasFunction(obj, fName) {
     return is(obj[fName]) && typeof obj[fName] === 'function';
 }
 /**
- *
+ * Enumerate properties on the object an invokes callback for each one of them
  * @param object Object to enumarate
  * @param callback Callback to be invoked for each property
  */
@@ -188,6 +195,26 @@ export function enumerateObject(object, callback) {
             callback(prop, object[prop]);
         }
     }
+}
+/**
+ * Creates new object from passed one by calling callback for each property. Result from callback is an input for next iteration
+ * @param object - input object
+ * @param callback - (currentResult, propertyName, propertyValue, currentIndex) - callback for execution
+ * @param initialValue - initial value of a result object
+ */
+export function reduceObject(object, callback, initialValue) {
+    if (!are(object, callback)) {
+        return initialValue;
+    }
+    let result = initialValue;
+    let counter = 0;
+    for (let prop in object) {
+        if (object.hasOwnProperty(prop)) {
+            result = callback(result, prop, object[prop], counter);
+            counter++;
+        }
+    }
+    return result;
 }
 /**
  * Creates object from JSON string
@@ -275,6 +302,9 @@ _id_1 = new WeakMap(), _delay_1 = new WeakMap(), _callback_1 = new WeakMap();
  * @returns cancellation funtion
  */
 export function throttle(callback, throttleTime) {
+    if (!are(throttleTime, callback)) {
+        throw new Error("[thorttle]: Incorrect throttle arguments");
+    }
     let id = null;
     return function (...args) {
         if (id === null) {
@@ -303,6 +333,9 @@ export function throttle(callback, throttleTime) {
  * @returns Promise that executes callback or throws error when is locked
  */
 export function throttleAsync(callback) {
+    if (!is(callback)) {
+        throw new Error("[throttleAsync]: Provided callback is incorrect");
+    }
     let locked = false;
     return function (...args) {
         if (!locked) {
@@ -333,6 +366,9 @@ export function throttleAsync(callback) {
  * @returns cancellation function
  */
 export function debounce(callback, debounceTime) {
+    if (!are(callback, debounceTime)) {
+        throw new Error("[debounce]: Input arguments are not correct");
+    }
     let id = null;
     return function (...args) {
         if (id != null) {
@@ -357,6 +393,9 @@ export function debounce(callback, debounceTime) {
  * @returns Cancel callback
  */
 export function delay(callback, delayTime) {
+    if (!are(callback, delayTime)) {
+        throw new Error("[delay]: Input arguments are not correct");
+    }
     let id = null;
     return function (...args) {
         if (id === null) {
@@ -371,5 +410,24 @@ export function delay(callback, delayTime) {
                 id = null;
             }
         };
+    };
+}
+/**
+ * Creates function that once invoked returns a promise that executes original callback
+ * @param callback Callback to execute in promise
+ */
+export function promisify(callback) {
+    if (!is(callback)) {
+        throw new Error("[promisify]: Callback is incorrect");
+    }
+    return function (...args) {
+        return new Promise((resolve, reject) => {
+            try {
+                resolve(callback(...args));
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
     };
 }

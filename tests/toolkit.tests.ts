@@ -1,4 +1,4 @@
-import { are, clone, counter, createElementFromString, debounce, Debounce, enumerateObject, getRangeValue, hasFunction, is, isInRange, sleep, Throttle, throttle, throttleAsync } from "../src/index"
+import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, is, isInRange, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -424,5 +424,68 @@ describe("Tests checking class [Throttle]", function () {
         throttled.cancel();
         throttled.call("YYY")
         expect(result).toEqual("YYY");
+    })
+})
+
+describe("Tests checking method [Counter]", function () {
+    it("Normal case", async function () {
+        let counter = Counter("X");
+        let result = counter();
+        expect(result).toEqual("X0");
+    })
+
+    it("Normal case - no prefix", async function () {
+        let counter = Counter();
+        let result = counter();
+        expect(result).toEqual("0");
+    })
+
+})
+
+describe("Tests checking method [delay]", function () {
+    it("Normal case", async function () {
+        let result = null;
+        let delayed = delay((value: string) => {
+            result = value
+        }, 50);
+        delayed("X")
+        await sleep(55);
+        expect(result).toEqual("X");
+    })
+
+    it("Normal case, no wait", async function () {
+        let result = null;
+        let delayed = delay((value: string) => {
+            result = value
+        }, 50);
+        delayed("X")
+        expect(result).toEqual(null);
+    })
+
+})
+
+describe("Tests checking method [promisify]", function () {
+    it("Normal case", async function () {
+        let result = null;
+        let promised = promisify((value: string) => {
+            return value;
+        });
+        result = await promised("X");
+        expect(result).toEqual("X");
+    })
+})
+
+describe("Tests checking method [reduceObject]", function () {
+    it("Normal case", async function () {
+        let result: string = null;
+        let input = {
+            a: "X",
+            b: "Y"
+        }
+        result = reduceObject<string>(input, (current: string, prop: string, value: any, index: number) => {
+            let str = prop + value;
+            return current + str;
+        }, "");
+        expect(result).toEqual("aXbY");
     })
 })

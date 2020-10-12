@@ -15,10 +15,23 @@ Set of handy functions and shorthands
 * parseJsonString - (attribute) - parses JSON string to object
 * counter - generator which gives next number starting from 0 to 200000. After reaching max value it starts from 0 again.
 * enumerateObject - (object, callback: (property, value)) - iterates through an object and calls callback for each property.
+* reduceObject - (object, callback: (result, property, value, index), initial) - perform reduce but on object. Enumerates through object and invokes callback for each property
 * hasFunction - checks whether object has porperty and this property is an function
 * hasProperty - checks whether object has porperty
 
 ## Specials
 * debounce - (callback, delay) - creates new, debounced function which delays callback execution by specific time. However if called again before current timeout finishes, current is cancelled and new timeout is created. Returns cancellation function. Useful in search boxes.
+* Debounce - similar to above, but exposes two functions to achieve the same effect. To call a callback invoke method **call** with callback arguments. To cancel current execution, invoke method **cancel**
+```javascript
+let debounce = new Debounce(callback, timeout)
+debounce.call(...args);
+debounce.cancel();
+```
 * throttle - (callback, delay) - invokes callback and then block next executions by specific time or until is cancelled. Returns cancellation function. Useful to block mulitple calls performed in short period of time
+* Throttle - similar to Debounce class. Provides two methods: call and cancel. Call accepts the same arguments like original callback as they are passed to callback in the time of execution.
+```javascript
+let throttle = new Throttle(callback, throttleTime)
+throttle.call(...args);
+throttle.cancel();
+```
 * delay - (callback, delay) - delay callback execution by specific time. Return cancellation function.

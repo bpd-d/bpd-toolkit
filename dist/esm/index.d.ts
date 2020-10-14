@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.4";
+export declare const BPD_TOOLKIT_VERSION = "0.1.5";
 /**
  * Checks if value is undefined
  * @param val value
@@ -160,3 +160,29 @@ export declare function delay(callback: (...args: any[]) => void, delayTime: num
  * @param callback Callback to execute in promise
  */
 export declare function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;
+/**
+ * Stores number of historical elements, allows for undo and redo objects
+ */
+export declare class Keeper<T> {
+    #private;
+    constructor(limit: number);
+    /**
+     * Pushes element to undo list
+     * @param t - element
+     */
+    push(t: T): void;
+    /**
+     * Gets latest element from undo list or undefined if list is empty
+     * @param t - current item to be pushed to redo list. If empty undoed element will be pushed
+     */
+    undo(t?: T): T | undefined;
+    /**
+     * Gets latest element from redo list or undefined if list is empty
+     */
+    redo(): T | undefined;
+    /**
+     * Shrinks down undos array to size of limit - 1
+     * Removes oldest entries (starting from index of 0)
+     */
+    shrink(): void;
+}

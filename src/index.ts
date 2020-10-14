@@ -91,6 +91,13 @@ export function clone(object: any): any {
     if (!is(object)) {
         return undefined;
     }
+    let type = typeof object;
+    if (["number", "boolean", "string"].includes(type)) {
+        return object;
+    }
+    if (Array.isArray(object)) {
+        return [...object]
+    }
     return Object.assign({}, object);
 }
 
@@ -437,5 +444,65 @@ export function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) 
                 reject(e);
             }
         })
+    }
+}
+
+/**
+ * Stores number of historical elements, allows for undo and redo objects
+ */
+export class Keeper<T> {
+    #limit: number;
+    #undos: T[];
+    #redos: T[];
+    constructor(limit: number) {
+        this.#limit = limit;
+        this.#redos = [];
+        this.#undos = [];
+    }
+    /**
+     * Pushes element to undo list
+     * @param t - element
+     */
+    push(t: T) {
+        let copy = clone(t);
+        this.shrink();
+        this.#undos.push(copy);
+        this.#redos = [];
+    }
+
+    /**
+     * Gets latest element from undo list or undefined if list is empty
+     * @param t - current item to be pushed to redo list. If empty undoed element will be pushed
+     */
+    undo(t?: T): T | undefined {
+        if (this.#undos.length === 0) {
+            return undefined;
+        }
+        let copy = clone(t);
+        let entry = this.#undos.pop();
+        this.#redos.push(copy ?? entry);
+        return entry;
+    }
+
+    /**
+     * Gets latest element from redo list or undefined if list is empty
+     */
+    redo(): T | undefined {
+        if (this.#redos.length === 0) {
+            return undefined;
+        }
+        return this.#redos.pop();
+    }
+
+    /**
+     * Shrinks down undos array to size of limit - 1
+     * Removes oldest entries (starting from index of 0)
+     */
+    shrink(): void {
+        let len = this.#undos.length;
+        if (this.#undos.length >= this.#limit) {
+            let diff = len - this.#limit + 1;
+            this.#undos.splice(0, diff);
+        }
     }
 }

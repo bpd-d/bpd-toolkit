@@ -1,5 +1,7 @@
 # bpd toolkit
-# [0.1.5] WIP
+# [0.1.6] WIP
+# [0.1.5] 2020-10-14
+* [Added] Keeper class to manage object changes
 # [0.1.4] 2020-10-12
 * [Added] function **promisify**
 * [Added] function **reduceObject**

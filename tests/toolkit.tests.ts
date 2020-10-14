@@ -1,4 +1,4 @@
-import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, is, isInRange, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
+import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, is, isInRange, Keeper, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -488,4 +488,76 @@ describe("Tests checking method [reduceObject]", function () {
         }, "");
         expect(result).toEqual("aXbY");
     })
+})
+
+describe("Tests checking class [Keeper]", function () {
+    let keeper: Keeper<string>;
+    beforeEach(() => {
+        keeper = new Keeper<string>(4);
+    })
+
+    it("Empty store - undo", function () {
+        let result = null;
+        result = keeper.undo();
+        expect(result).toBeUndefined();
+    })
+
+    it("Empty store - redo", function () {
+        let result = null;
+        result = keeper.redo();
+        expect(result).toBeUndefined();
+    })
+
+    it("Empty store after push- redo", function () {
+        let result = null;
+        keeper.push("X");
+        keeper.undo();
+        keeper.push("Y");
+        result = keeper.redo();
+        expect(result).toBeUndefined();
+    })
+
+    it("Undo", function () {
+        let result = null;
+        keeper.push("X");
+        result = keeper.undo('X');
+        expect(result).toEqual("X");
+    })
+
+    it("Redo", function () {
+        let result = null;
+        keeper.push("X");
+        keeper.undo('Y');
+        result = keeper.redo();
+        expect(result).toEqual("Y");
+    })
+
+
+    it("Redo - undefined", function () {
+        let result = null;
+        keeper.push("X");
+        keeper.undo('Y');
+        result = keeper.redo();
+        result = keeper.redo();
+        expect(result).toBeUndefined();
+    })
+
+
+    it("Limit", function () {
+        let result = null;
+        keeper.push("A");
+        keeper.push("B");
+        keeper.push("C");
+        keeper.push("D");
+        keeper.push('E');
+        result = keeper.undo("1");
+        result = keeper.undo("2");
+        result = keeper.undo("3");
+        result = keeper.undo("4");
+        result = keeper.undo("5");
+        expect(result).toBeUndefined();
+    })
+
+
+
 })

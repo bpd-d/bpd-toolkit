@@ -35,3 +35,10 @@ throttle.call(...args);
 throttle.cancel();
 ```
 * delay - (callback, delay) - delay callback execution by specific time. Return cancellation function.
+* Keeper - (limit) - class which helps with managing object changes. 
+```javascript
+let keeper = new Keeper(4);
+keeper.push(obj);
+keeper.undo(current);
+keeper.redo();
+```

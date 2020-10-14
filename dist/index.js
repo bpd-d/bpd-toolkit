@@ -125,6 +125,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "debounce", function() { return debounce; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "delay", function() { return delay; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "promisify", function() { return promisify; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Keeper", function() { return Keeper; });
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
@@ -138,8 +139,8 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     }
     return privateMap.get(receiver);
 };
-var _id, _delay, _callback, _id_1, _delay_1, _callback_1;
-const BPD_TOOLKIT_VERSION = "0.1.4";
+var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
+const BPD_TOOLKIT_VERSION = "0.1.5";
 /**
  * Checks if value is undefined
  * @param val value
@@ -224,6 +225,13 @@ function sleep(timeout) {
 function clone(object) {
     if (!is(object)) {
         return undefined;
+    }
+    let type = typeof object;
+    if (["number", "boolean", "string"].includes(type)) {
+        return object;
+    }
+    if (Array.isArray(object)) {
+        return [...object];
     }
     return Object.assign({}, object);
 }
@@ -558,6 +566,63 @@ function promisify(callback) {
         });
     };
 }
+/**
+ * Stores number of historical elements, allows for undo and redo objects
+ */
+class Keeper {
+    constructor(limit) {
+        _limit.set(this, void 0);
+        _undos.set(this, void 0);
+        _redos.set(this, void 0);
+        __classPrivateFieldSet(this, _limit, limit);
+        __classPrivateFieldSet(this, _redos, []);
+        __classPrivateFieldSet(this, _undos, []);
+    }
+    /**
+     * Pushes element to undo list
+     * @param t - element
+     */
+    push(t) {
+        let copy = clone(t);
+        this.shrink();
+        __classPrivateFieldGet(this, _undos).push(copy);
+        __classPrivateFieldSet(this, _redos, []);
+    }
+    /**
+     * Gets latest element from undo list or undefined if list is empty
+     * @param t - current item to be pushed to redo list. If empty undoed element will be pushed
+     */
+    undo(t) {
+        if (__classPrivateFieldGet(this, _undos).length === 0) {
+            return undefined;
+        }
+        let copy = clone(t);
+        let entry = __classPrivateFieldGet(this, _undos).pop();
+        __classPrivateFieldGet(this, _redos).push(copy !== null && copy !== void 0 ? copy : entry);
+        return entry;
+    }
+    /**
+     * Gets latest element from redo list or undefined if list is empty
+     */
+    redo() {
+        if (__classPrivateFieldGet(this, _redos).length === 0) {
+            return undefined;
+        }
+        return __classPrivateFieldGet(this, _redos).pop();
+    }
+    /**
+     * Shrinks down undos array to size of limit - 1
+     * Removes oldest entries (starting from index of 0)
+     */
+    shrink() {
+        let len = __classPrivateFieldGet(this, _undos).length;
+        if (__classPrivateFieldGet(this, _undos).length >= __classPrivateFieldGet(this, _limit)) {
+            let diff = len - __classPrivateFieldGet(this, _limit) + 1;
+            __classPrivateFieldGet(this, _undos).splice(0, diff);
+        }
+    }
+}
+_limit = new WeakMap(), _undos = new WeakMap(), _redos = new WeakMap();
 
 
 /***/ })

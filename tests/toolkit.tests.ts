@@ -1,4 +1,4 @@
-import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, is, isInRange, Keeper, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
+import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, insert, is, isInRange, Keeper, move, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -487,6 +487,110 @@ describe("Tests checking method [reduceObject]", function () {
             return current + str;
         }, "");
         expect(result).toEqual("aXbY");
+    })
+})
+
+describe("Tests checking method [insert]", function () {
+    it("Normal case", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(input, 1, 9);
+        expect(result[0]).toEqual(1);
+        expect(result[1]).toEqual(9);
+        expect(result[2]).toEqual(2);
+    })
+
+    it("Edge case - index lower than 0", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(input, -1, 9);
+        expect(result[0]).toEqual(9);
+        expect(result[1]).toEqual(1);
+        expect(result[2]).toEqual(2);
+    })
+
+    it("Edge case - index greater than length", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(input, 5, 9);
+        expect(result[0]).toEqual(1);
+        expect(result[1]).toEqual(2);
+        expect(result[2]).toEqual(3);
+        expect(result[3]).toEqual(9);
+    })
+
+    it("Edge case - empty array", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert([], 5, 9);
+        expect(result[0]).toEqual(9);
+    })
+
+    it("Edge case - null array", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(null, 1, 9);
+        expect(result).toEqual(null);
+    })
+
+    it("Edge case - no new item", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(input, 1);
+        expect(result).toEqual(result);
+    })
+})
+
+describe("Tests checking method [move]", function () {
+    it("Normal case", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3, 4];
+        result = move(input, 1, 2);
+        expect(result[0]).toEqual(1);
+        expect(result[1]).toEqual(3);
+        expect(result[2]).toEqual(2);
+    })
+
+    it("Normal case", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3, 4];
+        result = move(input, 1, 2, 2);
+        expect(result[0]).toEqual(1);
+        expect(result[1]).toEqual(4);
+        expect(result[2]).toEqual(2);
+    })
+
+    it("Edge case - index lower than 0", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3, 4];
+        result = move(input, 1, -1);
+        expect(result[0]).toEqual(2);
+        expect(result[1]).toEqual(1);
+        expect(result[2]).toEqual(3);
+    })
+
+    it("Edge case - index greater than length", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3, 4];
+        result = move(input, 1, 8);
+        expect(result[0]).toEqual(1);
+        expect(result[1]).toEqual(3);
+        expect(result[2]).toEqual(4);
+        expect(result[3]).toEqual(2);
+    })
+
+    it("Edge case - empty array", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3, 4];
+        result = move([], 1, 8);
+        expect(result).toEqual(result);
+    })
+
+    it("Edge case - null array", function () {
+        let result: number[] = [];
+        let input: number[] = [1, 2, 3];
+        result = insert(null, 1, 9);
+        expect(null).toEqual(null);
     })
 })
 

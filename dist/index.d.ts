@@ -163,6 +163,22 @@ export function delay(callback: (...args: any[]) => void, delayTime: number): (.
     */
 export function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;
 /**
+    * Inserts new item to the collection at specific index. If index is lower than 0 then item is added at position 0, if index is bigger than collection size then item is added at the end
+    * @param collection Collection of items
+    * @param index position which new item should be added to - if undefined or null provided item will be inserted at last position
+    * @param t new items to add
+    * @returns Copy of the collection with new item inserted at specific position
+    */
+export function insert<T>(collection: T[], index: number, ...t: T[]): T[];
+/**
+    * Moves element or number of elements starting from index to new index
+    * @param collection - base collection
+    * @param from - index from
+    * @param to - index to
+    * @param size - ?optional - amount of items to be moved
+    */
+export function move<T>(collection: T[], from: number, to: number, size?: number): T[];
+/**
     * Stores number of historical elements, allows for undo and redo objects
     */
 export class Keeper<T> {

@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.5";
+export const BPD_TOOLKIT_VERSION = "0.1.7";
 /**
  * Checks if value is undefined
  * @param val value
@@ -445,6 +445,61 @@ export function promisify<T>(callback: (...args: any[]) => T): (...args: any[]) 
             }
         })
     }
+}
+
+
+/**
+ * Inserts new item to the collection at specific index. If index is lower than 0 then item is added at position 0, if index is bigger than collection size then item is added at the end
+ * @param collection Collection of items
+ * @param index position which new item should be added to - if undefined or null provided item will be inserted at last position
+ * @param t new items to add
+ * @returns Copy of the collection with new item inserted at specific position
+ */
+export function insert<T>(collection: T[], index: number, ...t: T[]): T[] {
+    if (!collection || collection === null || !t || t === null || t.length === 0) {
+        return collection;
+    }
+    let length = collection.length;
+    // If not provided then add then treat it like last
+    if (!index || index === 0 || index >= length) {
+        return [...collection, ...t];
+    }
+    if (index <= 0) {
+        return [...t, ...collection];
+    }
+    collection.splice(index, 0, ...t);
+    return [...collection]
+}
+
+/**
+ * Moves element or number of elements starting from index to new index
+ * @param collection - base collection
+ * @param from - index from
+ * @param to - index to
+ * @param size - ?optional - amount of items to be moved
+ */
+export function move<T>(collection: T[], from: number, to: number, size?: number): T[] {
+    if (!collection || collection === null || from < 0) {
+        return collection;
+    }
+    let amount = size ?? 1;
+    let length = collection.length;
+    if (length < 2 || from >= length) {
+        return [...collection];
+    }
+    const el = collection.splice(from, amount);
+    const newLength = length - amount;
+    const newTo = to;
+    //let newIdx = newTo < 0 ? 0 : newTo > length - amount ? length - amount : newTo;
+    if (newTo <= 0) {
+        return [...el, ...collection];
+    }
+    if (newTo >= newLength) {
+        return [...collection, ...el];
+    }
+    collection.splice(newTo, 0, ...el)
+    return [...collection];
+
 }
 
 /**

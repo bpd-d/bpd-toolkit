@@ -1,5 +1,7 @@
 # bpd toolkit
-# [0.1.7] WIP
+# [0.1.8] WIP
+# [0.1.7] 2020-12-15
+* [Fix] ESM build
 # [0.1.6] 2020-12-12
 * [Added] New methods: **insert** and **move** to manipulate collections
 # [0.1.5] 2020-10-14

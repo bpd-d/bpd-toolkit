@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.8";
+export const BPD_TOOLKIT_VERSION = "0.1.9";
 /**
  * Checks if value is undefined
  * @param val value
@@ -500,6 +500,40 @@ export function move<T>(collection: T[], from: number, to: number, size?: number
     collection.splice(newTo, 0, ...el)
     return [...collection];
 
+}
+
+/**
+ * Opens element in fullscreen if possible
+ * @param element dom element. For full page use document.documentElement
+ */
+export function openFullscreen(element: Element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+        return;
+    }
+    let elementAny = element as any;
+    if (elementAny.webkitRequestFullscreen) { /* Safari */
+        elementAny.webkitRequestFullscreen();
+    } else if (elementAny.msRequestFullscreen) { /* IE11 */
+        elementAny.msRequestFullscreen();
+    }
+}
+
+
+/**
+ * Closes fullscreen if possible
+ */
+export function closeFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+        return;
+    }
+    let anyDoc = document as any;
+    if (anyDoc.webkitExitFullscreen) { /* Safari */
+        anyDoc.webkitExitFullscreen();
+    } else if (anyDoc.msExitFullscreen) { /* IE11 */
+        anyDoc.msExitFullscreen();
+    }
 }
 
 /**

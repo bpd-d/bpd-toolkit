@@ -127,6 +127,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "promisify", function() { return promisify; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insert", function() { return insert; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "move", function() { return move; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openFullscreen", function() { return openFullscreen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeFullscreen", function() { return closeFullscreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Keeper", function() { return Keeper; });
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
@@ -142,7 +144,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "0.1.7";
+const BPD_TOOLKIT_VERSION = "0.1.8";
 /**
  * Checks if value is undefined
  * @param val value
@@ -618,6 +620,39 @@ function move(collection, from, to, size) {
     }
     collection.splice(newTo, 0, ...el);
     return [...collection];
+}
+/**
+ * Opens element in fullscreen if possible
+ * @param element dom element. For full page use document.documentElement
+ */
+function openFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+        return;
+    }
+    let elementAny = element;
+    if (elementAny.webkitRequestFullscreen) { /* Safari */
+        elementAny.webkitRequestFullscreen();
+    }
+    else if (elementAny.msRequestFullscreen) { /* IE11 */
+        elementAny.msRequestFullscreen();
+    }
+}
+/**
+ * Closes fullscreen if possible
+ */
+function closeFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+        return;
+    }
+    let anyDoc = document;
+    if (anyDoc.webkitExitFullscreen) { /* Safari */
+        anyDoc.webkitExitFullscreen();
+    }
+    else if (anyDoc.msExitFullscreen) { /* IE11 */
+        anyDoc.msExitFullscreen();
+    }
 }
 /**
  * Stores number of historical elements, allows for undo and redo objects

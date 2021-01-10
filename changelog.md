@@ -1,5 +1,8 @@
 # bpd toolkit
-# [0.1.9] WIP
+# [0.1.10] WIP
+# [0.1.9] 2020-01-10
+* [Added] **getLocation** method
+* [Added] **where** and **findFirst** collection methods
 # [0.1.8] 2020-12-26
 * [Added] New functions **openFullscreen** and **closeFullscreen**
 # [0.1.7] 2020-12-15

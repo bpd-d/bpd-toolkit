@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.9";
+export const BPD_TOOLKIT_VERSION = "0.1.10";
 /**
  * Checks if value is undefined
  * @param val value
@@ -499,7 +499,6 @@ export function move<T>(collection: T[], from: number, to: number, size?: number
     }
     collection.splice(newTo, 0, ...el)
     return [...collection];
-
 }
 
 /**

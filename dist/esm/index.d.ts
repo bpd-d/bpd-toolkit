@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.8";
+export declare const BPD_TOOLKIT_VERSION = "0.1.9";
 /**
  * Checks if value is undefined
  * @param val value

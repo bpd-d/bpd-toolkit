@@ -18,6 +18,18 @@ Set of handy functions and shorthands
 * reduceObject - (object, callback: (result, property, value, index), initial) - perform reduce but on object. Enumerates through object and invokes callback for each property
 * hasFunction - checks whether object has porperty and this property is an function
 * hasProperty - checks whether object has porperty
+* insert - (collection, index, ...items) - Inserts new item to the collection at specific index
+* move - (collection, from, to, size?) -  Moves element or number of elements starting from index to new index
+* openFullscreen - (element) - Opens element in fullscreen if possible 
+* closeFullscreen - Closes fullscreen if possible
+* promisify - (callback) - Creates function that once invoked returns a promise that executes original callback
+
+## Location
+* getLocation - (options) - Promisified function that obtains geolocation coordinates
+
+## Collection
+* where - (collection, condition) - Returns all items that pass the condition or undefined if collection is empty or callback is not provided
+* findFirst - (collection, condition) - Returns first item and it's index in the collection that passes the condition 
 
 ## Specials
 * debounce - (callback, delay) - creates new, debounced function which delays callback execution by specific time. However if called again before current timeout finishes, current is cancelled and new timeout is created. Returns cancellation function. Useful in search boxes.
@@ -42,3 +54,4 @@ keeper.push(obj);
 keeper.undo(current);
 keeper.redo();
 ```
+

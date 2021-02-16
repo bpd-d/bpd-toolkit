@@ -1,5 +1,9 @@
 # bpd toolkit
 # [0.1.10] WIP
+* [Added] Task to handle async operations
+* [Added] Copy text
+* [Added] Generate GUID, isFullscreen
+* [Added] makeArray
 # [0.1.9] 2020-01-10
 * [Added] **getLocation** method
 * [Added] **where** and **findFirst** collection methods

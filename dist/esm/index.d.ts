@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.9";
+export declare const BPD_TOOLKIT_VERSION = "0.1.10";
 /**
  * Checks if value is undefined
  * @param val value
@@ -177,6 +177,10 @@ export declare function insert<T>(collection: T[], index: number, ...t: T[]): T[
  */
 export declare function move<T>(collection: T[], from: number, to: number, size?: number): T[];
 /**
+ * Generates unique guid
+ */
+export declare function generateGuid(): string;
+/**
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
@@ -185,6 +189,7 @@ export declare function openFullscreen(element: Element): void;
  * Closes fullscreen if possible
  */
 export declare function closeFullscreen(): void;
+export declare function isFullscreen(element: Element): boolean;
 /**
  * Stores number of historical elements, allows for undo and redo objects
  */

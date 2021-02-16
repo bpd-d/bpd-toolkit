@@ -54,4 +54,15 @@ keeper.push(obj);
 keeper.undo(current);
 keeper.redo();
 ```
-
+## Task
+Handles async operations using promises. It behaves like a factory - callback passed during initialization is converted to promise on every **call**. Task respects argument passed during call, if there is an execution pending with the same argument promised is reused.
+Usage:
+```javascript
+const task = new Task<T,V>(callback, timeout?);
+const result = await task.call(arg);
+```
+where:
+* T - argument type
+* V - returned type
+* callback - callback to execute
+* timeout - optional - if set then each execution gets delayed by this value

@@ -127,8 +127,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "promisify", function() { return promisify; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "insert", function() { return insert; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "move", function() { return move; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "generateGuid", function() { return generateGuid; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "openFullscreen", function() { return openFullscreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeFullscreen", function() { return closeFullscreen; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFullscreen", function() { return isFullscreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Keeper", function() { return Keeper; });
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
@@ -144,7 +146,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "0.1.9";
+const BPD_TOOLKIT_VERSION = "0.1.10";
 /**
  * Checks if value is undefined
  * @param val value
@@ -622,6 +624,15 @@ function move(collection, from, to, size) {
     return [...collection];
 }
 /**
+ * Generates unique guid
+ */
+function generateGuid() {
+    const S4 = function () {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+/**
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
@@ -653,6 +664,12 @@ function closeFullscreen() {
     else if (anyDoc.msExitFullscreen) { /* IE11 */
         anyDoc.msExitFullscreen();
     }
+}
+function isFullscreen(element) {
+    if (!is(element)) {
+        return false;
+    }
+    return element && element.clientHeight >= ((screen.availHeight || screen.height) - 30) && element.clientWidth >= ((screen.availWidth || screen.width) - 30);
 }
 /**
  * Stores number of historical elements, allows for undo and redo objects

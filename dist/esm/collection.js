@@ -34,3 +34,18 @@ export function findFirst(collection, condition) {
     }
     return [collection[idx], idx];
 }
+/**
+ * Handy when argument can be either single element or an array.
+ * @param t single element or array of the elements
+ * @param copy? Set to true if array argument shall be copied
+ * @returns array of the elements
+ */
+export function makeArray(t, copy) {
+    if (!t) {
+        return [];
+    }
+    if (Array.isArray(t)) {
+        return copy === true ? t : [...t];
+    }
+    return [t];
+}

@@ -16,3 +16,10 @@ export declare function where<T>(collection: T[], whereFn: CollectionConditionCa
  * @returns Matching item or undefined
  */
 export declare function findFirst<T>(collection: T[], condition: CollectionConditionCallback<T>): [T, number] | undefined;
+/**
+ * Handy when argument can be either single element or an array.
+ * @param t single element or array of the elements
+ * @param copy? Set to true if array argument shall be copied
+ * @returns array of the elements
+ */
+export declare function makeArray<T>(t?: T | T[], copy?: boolean): T[];

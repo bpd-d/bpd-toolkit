@@ -502,6 +502,16 @@ export function move<T>(collection: T[], from: number, to: number, size?: number
 }
 
 /**
+ * Generates unique guid
+ */
+export function generateGuid(): string {
+    const S4 = function () {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+
+/**
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
@@ -534,6 +544,14 @@ export function closeFullscreen() {
         anyDoc.msExitFullscreen();
     }
 }
+
+export function isFullscreen(element: Element): boolean {
+    if (!is(element)) {
+        return false;
+    }
+    return element && element.clientHeight >= ((screen.availHeight || screen.height) - 30) && element.clientWidth >= ((screen.availWidth || screen.width) - 30)
+}
+
 
 /**
  * Stores number of historical elements, allows for undo and redo objects

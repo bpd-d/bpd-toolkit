@@ -1,6 +1,6 @@
 {
   "name": "bpd-toolkit",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Set of handy functions and shorthands",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -10,10 +10,7 @@
     "/dist/index.min.js",
     "/dist/index.min.js.map",
     "/dist/index.d.ts",
-    "/dist/esm/index.js",
-    "/dist/esm/index.d.ts",
-    "/dist/esm/location.js",
-    "/dist/esm/location.d.ts"
+    "/dist/esm/*"
   ],
   "scripts": {
     "build": "webpack --config webpack.production.js",

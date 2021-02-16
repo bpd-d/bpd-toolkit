@@ -12,7 +12,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
-export const BPD_TOOLKIT_VERSION = "0.1.10";
+export const BPD_TOOLKIT_VERSION = "0.1.11";
 /**
  * Checks if value is undefined
  * @param val value

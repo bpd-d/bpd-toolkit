@@ -1,4 +1,4 @@
-import { findFirst, where } from "../src/collection";
+import { all, findFirst, where } from "../src/collection";
 describe("Tests checking method [where]", function () {
     let collection: string[];
     beforeAll(() => {
@@ -79,5 +79,39 @@ describe("Tests checking method [findFirst]", function () {
 
         expect(out).toBeUndefined();
     })
+
+})
+
+describe("Tests checking method [all]", function () {
+    let collection: number[];
+    beforeAll(() => {
+        collection = [3, 4, 5, 6];
+    })
+
+    it("Returns true when all items pass condition", () => {
+        let out: boolean;
+        let toFind = 2;
+
+        out = all(collection, (item: number) => {
+            return item > toFind;
+        })
+
+        expect(out).toBeTrue();
+
+
+    })
+
+    it("Returns false when NOT all items pass condition", () => {
+        let out: boolean;
+        let toFind = 4;
+
+        out = all(collection, (item: number) => {
+            return item > toFind;
+        })
+
+        expect(out).toBeFalse();
+    })
+
+
 
 })

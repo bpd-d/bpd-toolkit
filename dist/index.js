@@ -132,6 +132,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "closeFullscreen", function() { return closeFullscreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isFullscreen", function() { return isFullscreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Keeper", function() { return Keeper; });
+var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
     if (!privateMap.has(receiver)) {
         throw new TypeError("attempted to set private field on non-instance");
@@ -146,7 +155,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "0.1.11";
+const BPD_TOOLKIT_VERSION = "0.1.12";
 /**
  * Checks if value is undefined
  * @param val value
@@ -637,33 +646,43 @@ function generateGuid() {
  * @param element dom element. For full page use document.documentElement
  */
 function openFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-        return;
-    }
-    let elementAny = element;
-    if (elementAny.webkitRequestFullscreen) { /* Safari */
-        elementAny.webkitRequestFullscreen();
-    }
-    else if (elementAny.msRequestFullscreen) { /* IE11 */
-        elementAny.msRequestFullscreen();
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        if (element.requestFullscreen) {
+            yield element.requestFullscreen();
+            return true;
+        }
+        let elementAny = element;
+        if (elementAny.webkitRequestFullscreen) { /* Safari */
+            yield elementAny.webkitRequestFullscreen();
+            return true;
+        }
+        else if (elementAny.msRequestFullscreen) { /* IE11 */
+            yield elementAny.msRequestFullscreen();
+            return true;
+        }
+        return false;
+    });
 }
 /**
  * Closes fullscreen if possible
  */
 function closeFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-        return;
-    }
-    let anyDoc = document;
-    if (anyDoc.webkitExitFullscreen) { /* Safari */
-        anyDoc.webkitExitFullscreen();
-    }
-    else if (anyDoc.msExitFullscreen) { /* IE11 */
-        anyDoc.msExitFullscreen();
-    }
+    return __awaiter(this, void 0, void 0, function* () {
+        if (document.exitFullscreen) {
+            yield document.exitFullscreen();
+            return true;
+        }
+        let anyDoc = document;
+        if (anyDoc.webkitExitFullscreen) { /* Safari */
+            yield anyDoc.webkitExitFullscreen();
+            return true;
+        }
+        else if (anyDoc.msExitFullscreen) { /* IE11 */
+            yield anyDoc.msExitFullscreen();
+            return true;
+        }
+        return false;
+    });
 }
 function isFullscreen(element) {
     if (!is(element)) {

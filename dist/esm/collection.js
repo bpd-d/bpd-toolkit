@@ -49,3 +49,11 @@ export function makeArray(t, copy) {
     }
     return [t];
 }
+/**
+ * Return whether all collection elements pass condition
+ * @param array
+ * @param condition
+ */
+export function all(array, condition) {
+    return array && array.length > 0 && array.find((t) => !condition(t)) === undefined;
+}

@@ -55,3 +55,13 @@ export function makeArray<T>(t?: T | T[], copy?: boolean): T[] {
     }
     return [t];
 }
+
+
+/**
+ * Return whether all collection elements pass condition
+ * @param array 
+ * @param condition 
+ */
+export function all<T>(array: T[], condition: (t: T) => boolean) {
+    return array && array.length > 0 && array.find((t: T) => !condition(t)) === undefined;
+}

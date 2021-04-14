@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.11";
+export const BPD_TOOLKIT_VERSION = "0.1.12";
 /**
  * Checks if value is undefined
  * @param val value
@@ -515,34 +515,40 @@ export function generateGuid(): string {
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
-export function openFullscreen(element: Element) {
+export async function openFullscreen(element: Element): Promise<boolean> {
     if (element.requestFullscreen) {
-        element.requestFullscreen();
-        return;
+        await element.requestFullscreen();
+        return true;
     }
     let elementAny = element as any;
     if (elementAny.webkitRequestFullscreen) { /* Safari */
-        elementAny.webkitRequestFullscreen();
+        await elementAny.webkitRequestFullscreen();
+        return true;
     } else if (elementAny.msRequestFullscreen) { /* IE11 */
-        elementAny.msRequestFullscreen();
+        await elementAny.msRequestFullscreen();
+        return true;
     }
+    return false;
 }
 
 
 /**
  * Closes fullscreen if possible
  */
-export function closeFullscreen() {
+export async function closeFullscreen(): Promise<boolean> {
     if (document.exitFullscreen) {
-        document.exitFullscreen();
-        return;
+        await document.exitFullscreen();
+        return true;
     }
     let anyDoc = document as any;
     if (anyDoc.webkitExitFullscreen) { /* Safari */
-        anyDoc.webkitExitFullscreen();
+        await anyDoc.webkitExitFullscreen();
+        return true;
     } else if (anyDoc.msExitFullscreen) { /* IE11 */
-        anyDoc.msExitFullscreen();
+        await anyDoc.msExitFullscreen();
+        return true;
     }
+    return false;
 }
 
 export function isFullscreen(element: Element): boolean {

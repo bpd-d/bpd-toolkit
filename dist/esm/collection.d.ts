@@ -23,3 +23,9 @@ export declare function findFirst<T>(collection: T[], condition: CollectionCondi
  * @returns array of the elements
  */
 export declare function makeArray<T>(t?: T | T[], copy?: boolean): T[];
+/**
+ * Return whether all collection elements pass condition
+ * @param array
+ * @param condition
+ */
+export declare function all<T>(array: T[], condition: (t: T) => boolean): boolean;

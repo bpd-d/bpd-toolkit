@@ -1,0 +1,47 @@
+import { closeFullscreen, openFullscreen } from "../src";
+
+describe("Tests checking method [openFullscreen/closeFullscreen]", async function () {
+    it("Opens and closes with no error", async function () {
+        let err = false;
+        let newEL = document.createElement("div");
+        document.body.appendChild(newEL);
+        let resOpen = false;
+        let resClose = false;
+        try {
+            resOpen = await openFullscreen(newEL);
+            resClose = await closeFullscreen();
+        } catch (e) {
+            console.error(e);
+            err = true;
+        }
+        newEL.remove();
+        expect(err).toBeFalse();
+        expect(resOpen).toBeTrue();
+        expect(resClose).toBeTrue();
+    })
+
+    it("Not added element", async function () {
+        let err = false;
+        let newEL = document.createElement("div");
+        try {
+            await openFullscreen(newEL);
+            await closeFullscreen();
+        } catch (e) {
+            console.error(e);
+            err = true;
+        }
+        newEL.remove();
+        expect(err).toBeFalse();
+    })
+
+    it("Throws an error when incorrect element is passed", async function () {
+        let err = false;
+        try {
+            await openFullscreen(null);
+            await closeFullscreen();
+        } catch (e) {
+            err = true;
+        }
+        expect(err).toBeTrue();
+    })
+})

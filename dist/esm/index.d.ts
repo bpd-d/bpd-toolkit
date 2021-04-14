@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.11";
+export declare const BPD_TOOLKIT_VERSION = "0.1.12";
 /**
  * Checks if value is undefined
  * @param val value
@@ -184,11 +184,11 @@ export declare function generateGuid(): string;
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
-export declare function openFullscreen(element: Element): void;
+export declare function openFullscreen(element: Element): Promise<boolean>;
 /**
  * Closes fullscreen if possible
  */
-export declare function closeFullscreen(): void;
+export declare function closeFullscreen(): Promise<boolean>;
 export declare function isFullscreen(element: Element): boolean;
 /**
  * Stores number of historical elements, allows for undo and redo objects

@@ -1,4 +1,9 @@
 # bpd toolkit
+# [0.1.12] 2021-04-13
+* [Added] Queue component
+* [Added] **smartSwitch** function  
+* [Added] function **all** to collections which returns array of elements matching to condition
+* [Changed] open/close fulscreen
 # [0.1.11] 2021-02-16 
 * [Added] Task to handle async operations
 * [Added] Copy text

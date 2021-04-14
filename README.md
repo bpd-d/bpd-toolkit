@@ -30,6 +30,7 @@ Set of handy functions and shorthands
 ## Collection
 * where - (collection, condition) - Returns all items that pass the condition or undefined if collection is empty or callback is not provided
 * findFirst - (collection, condition) - Returns first item and it's index in the collection that passes the condition 
+* all - (collection, condition) - Returns all items matching to condition
 
 ## Specials
 * debounce - (callback, delay) - creates new, debounced function which delays callback execution by specific time. However if called again before current timeout finishes, current is cancelled and new timeout is created. Returns cancellation function. Useful in search boxes.
@@ -66,3 +67,17 @@ where:
 * V - returned type
 * callback - callback to execute
 * timeout - optional - if set then each execution gets delayed by this value
+
+## Switch
+
+**smartSwitch** is used to evaluate value based on input argument and list of condition callbacks passed in options.
+Condition is a callback that returns value, promise or function (which returns value at the end) - if callback returns undefined it means condition did not pass.
+
+Options:
+* conditions - list of condition callbacks
+* multi - conditions check loop goes to the end instead breaking on first match
+* default - default value returned when no condition passed 
+
+## Queue
+
+** **

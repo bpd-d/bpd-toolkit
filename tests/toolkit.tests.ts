@@ -1,4 +1,4 @@
-import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, insert, is, isInRange, Keeper, move, promisify, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
+import { are, clone, Counter, counter, createElementFromString, debounce, Debounce, delay, enumerateObject, getRangeValue, hasFunction, insert, is, isInRange, Keeper, move, promisify, random, reduceObject, sleep, Throttle, throttle, throttleAsync } from "../src/index"
 import { ObjectToEnumerate, SampleClass } from "./helpers/helpers"
 
 describe("Tests checking method [is]", function () {
@@ -664,4 +664,27 @@ describe("Tests checking class [Keeper]", function () {
 
 
 
+})
+
+
+describe("Tests checking method [random]", () => {
+    it("Generates number from range without arguments passed", async () => {
+        const result = await random();
+        expect(result).toBeGreaterThanOrEqual(0);
+        expect(result).toBeLessThanOrEqual(1);
+    })
+
+    it("Generates number from range with arguments passed", async () => {
+        const result = await random({ min: 10, max: 20 });
+        expect(result).toBeGreaterThanOrEqual(10);
+        expect(result).toBeLessThanOrEqual(20);
+    })
+
+    it("Generates number from range with excluded list", async () => {
+        const excluded = [11, 12, 13, 14, 15, 15.3, 13.5]
+        const result = await random({ min: 10, max: 20, excluded: excluded });
+        expect(result).toBeGreaterThanOrEqual(10);
+        expect(result).toBeLessThanOrEqual(20);
+        expect(excluded.includes(result)).toBeFalse();
+    })
 })

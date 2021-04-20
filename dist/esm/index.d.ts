@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "0.1.12";
+export declare const BPD_TOOLKIT_VERSION = "1.0.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -129,7 +129,7 @@ export declare class Throttle {
 }
 /**
  * Creates new function that invokes orginal one but with time limit
- * Orignal callback will not be invoke more often every time specified in second argument
+ * Orignal callback will not be invoked more often every time specified in second argument
  * @param callback - callback to execute
  * @param throttleTime - time in ms during which callback cannot be executed
  * @returns cancellation funtion
@@ -180,6 +180,22 @@ export declare function move<T>(collection: T[], from: number, to: number, size?
  * Generates unique guid
  */
 export declare function generateGuid(): string;
+export interface BpdRandomOptions {
+    min?: number;
+    max?: number;
+    excluded?: number[];
+    limit?: number;
+}
+/**
+ * Generates random number from given min - max range with exclusion of items provided in options.
+ * Method performs recursive operation when result doesn't pass condition - max step limit can be set in options (default is 10)
+ * If result cannot be found after max recursion steps then error is thrown
+ * Default for min is 0, for max is 1
+ * @param options (BpdRandomOptions) - min, max, excluded (array), limit (recursion)
+ * @returns random number
+ * @example random({min: 1, max: 3, excluded: [1.2], limit: 10})
+ */
+export declare function random(options?: BpdRandomOptions): Promise<number>;
 /**
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement

@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "0.1.12";
+export const BPD_TOOLKIT_VERSION = "1.0.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -312,7 +312,7 @@ export class Throttle {
 
 /**
  * Creates new function that invokes orginal one but with time limit
- * Orignal callback will not be invoke more often every time specified in second argument
+ * Orignal callback will not be invoked more often every time specified in second argument
  * @param callback - callback to execute
  * @param throttleTime - time in ms during which callback cannot be executed
  * @returns cancellation funtion
@@ -509,6 +509,53 @@ export function generateGuid(): string {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+
+export interface BpdRandomOptions {
+    min?: number;
+    max?: number;
+    excluded?: number[];
+    limit?: number;
+}
+
+/**
+ * Generates random number from given min - max range with exclusion of items provided in options.
+ * Method performs recursive operation when result doesn't pass condition - max step limit can be set in options (default is 10)
+ * If result cannot be found after max recursion steps then error is thrown
+ * Default for min is 0, for max is 1
+ * @param options (BpdRandomOptions) - min, max, excluded (array), limit (recursion)
+ * @returns random number
+ * @example random({min: 1, max: 3, excluded: [1.2], limit: 10})
+ */
+export async function random(options?: BpdRandomOptions): Promise<number> {
+    const _min: number = Math.ceil(options?.min ?? 0);
+    const _max: number = Math.floor(options?.max ?? 1);
+    const _exc: number[] = options?.excluded ?? [];
+    const _limit: number = Math.round(options?.limit ?? 10);
+    return getRandom(_min, _max, _exc, 0, _limit);
+}
+
+/**
+ * Method that generates random number
+ * @param min range minimum
+ * @param max range maximum
+ * @param excluded exlcuded list
+ * @param iteration iteration number
+ * @param limit max iteration limit
+ * @returns random number
+ */
+function getRandom(min: number, max: number, excluded: number[], iteration: number, limit: number): number {
+    const result = Math.floor(Math.random() * (max - min + 1)) + min;
+    // Positive ending
+    if (!excluded.includes(result)) {
+        return result;
+    }
+    const newIteration = iteration++;
+    if (newIteration >= limit) {
+        throw new Error(`Max recursive steps limit has been reached: ${limit}`)
+    }
+    return getRandom(min, max, excluded, newIteration, limit);
+
 }
 
 /**

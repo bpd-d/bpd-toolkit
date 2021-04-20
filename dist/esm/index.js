@@ -20,8 +20,8 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     }
     return privateMap.get(receiver);
 };
-var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit, _undos, _redos;
-export const BPD_TOOLKIT_VERSION = "0.1.12";
+var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit_1, _undos, _redos;
+export const BPD_TOOLKIT_VERSION = "1.0.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -312,7 +312,7 @@ export class Throttle {
 _id_1 = new WeakMap(), _delay_1 = new WeakMap(), _callback_1 = new WeakMap();
 /**
  * Creates new function that invokes orginal one but with time limit
- * Orignal callback will not be invoke more often every time specified in second argument
+ * Orignal callback will not be invoked more often every time specified in second argument
  * @param callback - callback to execute
  * @param throttleTime - time in ms during which callback cannot be executed
  * @returns cancellation funtion
@@ -508,6 +508,46 @@ export function generateGuid() {
     return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 /**
+ * Generates random number from given min - max range with exclusion of items provided in options.
+ * Method performs recursive operation when result doesn't pass condition - max step limit can be set in options (default is 10)
+ * If result cannot be found after max recursion steps then error is thrown
+ * Default for min is 0, for max is 1
+ * @param options (BpdRandomOptions) - min, max, excluded (array), limit (recursion)
+ * @returns random number
+ * @example random({min: 1, max: 3, excluded: [1.2], limit: 10})
+ */
+export function random(options) {
+    var _a, _b, _c, _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        const _min = Math.ceil((_a = options === null || options === void 0 ? void 0 : options.min) !== null && _a !== void 0 ? _a : 0);
+        const _max = Math.floor((_b = options === null || options === void 0 ? void 0 : options.max) !== null && _b !== void 0 ? _b : 1);
+        const _exc = (_c = options === null || options === void 0 ? void 0 : options.excluded) !== null && _c !== void 0 ? _c : [];
+        const _limit = Math.round((_d = options === null || options === void 0 ? void 0 : options.limit) !== null && _d !== void 0 ? _d : 10);
+        return getRandom(_min, _max, _exc, 0, _limit);
+    });
+}
+/**
+ * Method that generates random number
+ * @param min range minimum
+ * @param max range maximum
+ * @param excluded exlcuded list
+ * @param iteration iteration number
+ * @param limit max iteration limit
+ * @returns random number
+ */
+function getRandom(min, max, excluded, iteration, limit) {
+    const result = Math.floor(Math.random() * (max - min + 1)) + min;
+    // Positive ending
+    if (!excluded.includes(result)) {
+        return result;
+    }
+    const newIteration = iteration++;
+    if (newIteration >= limit) {
+        throw new Error(`Max recursive steps limit has been reached: ${limit}`);
+    }
+    return getRandom(min, max, excluded, newIteration, limit);
+}
+/**
  * Opens element in fullscreen if possible
  * @param element dom element. For full page use document.documentElement
  */
@@ -561,10 +601,10 @@ export function isFullscreen(element) {
  */
 export class Keeper {
     constructor(limit) {
-        _limit.set(this, void 0);
+        _limit_1.set(this, void 0);
         _undos.set(this, void 0);
         _redos.set(this, void 0);
-        __classPrivateFieldSet(this, _limit, limit);
+        __classPrivateFieldSet(this, _limit_1, limit);
         __classPrivateFieldSet(this, _redos, []);
         __classPrivateFieldSet(this, _undos, []);
     }
@@ -606,10 +646,10 @@ export class Keeper {
      */
     shrink() {
         let len = __classPrivateFieldGet(this, _undos).length;
-        if (__classPrivateFieldGet(this, _undos).length >= __classPrivateFieldGet(this, _limit)) {
-            let diff = len - __classPrivateFieldGet(this, _limit) + 1;
+        if (__classPrivateFieldGet(this, _undos).length >= __classPrivateFieldGet(this, _limit_1)) {
+            let diff = len - __classPrivateFieldGet(this, _limit_1) + 1;
             __classPrivateFieldGet(this, _undos).splice(0, diff);
         }
     }
 }
-_limit = new WeakMap(), _undos = new WeakMap(), _redos = new WeakMap();
+_limit_1 = new WeakMap(), _undos = new WeakMap(), _redos = new WeakMap();

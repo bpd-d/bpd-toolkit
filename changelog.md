@@ -1,4 +1,10 @@
 # bpd toolkit
+
+# [1.0.0] 2021-04-20
+* [Added] Method **random** that generates random value from given range 
+# [0.1.13] 2021-04-19
+* [Added] Lock component - simple object that can be used when lock is needed
+* [Added] Colors converter - toHslString, toRgbString, toRgbaString, toHexString, toHexaString, rgbToHsl, hslToRgb, hexToRgb
 # [0.1.12] 2021-04-13
 * [Added] Queue component
 * [Added] **smartSwitch** function  

@@ -81,3 +81,13 @@ Options:
 ## Queue
 
 ** **
+
+## Colors converters
+* hexToRgb - (string) - converts string w/o or with # to RGB color
+* hslToRgb - (hsl) - converts hsl color to rgb color
+* rgbToHsl - (rgb) - converts rgb color to hsl
+* toHslString - (hsl) - returns string hsl(...)
+* toRgbString - (rgb) - returns string rgb(...)
+* toRgbaString - (rgba) - returns string rgba(...)
+* toHexString - (rgb) - returns string #...
+* toHexaString - (rgba) - returns string #...

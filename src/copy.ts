@@ -38,7 +38,7 @@ export async function copyTextNew(value: string): Promise<string | null> {
     return result;
 }
 
-export async function copyText(value: string): Promise<string | null> {
+export default async function copyText(value: string): Promise<string | null> {
     if (!value) {
         return null;
     }

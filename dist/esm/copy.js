@@ -50,7 +50,7 @@ export function copyTextNew(value) {
         return result;
     });
 }
-export function copyText(value) {
+export default function copyText(value) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!value) {
             return null;

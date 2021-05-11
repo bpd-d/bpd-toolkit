@@ -155,7 +155,7 @@ export function parseJsonString(attribute: string): any | null {
 /**
  * Number generator
  */
-export function* counter() {
+export function* counter(): Iterator<number> {
     let idx = 0;
     while (true) {
         let reset = yield idx++;

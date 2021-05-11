@@ -66,7 +66,7 @@ export declare function parseJsonString(attribute: string): any | null;
 /**
  * Number generator
  */
-export declare function counter(): Generator<number, void, unknown>;
+export declare function counter(): Iterator<number>;
 export declare function Counter(prefix?: string): () => string;
 /**
  * Checks whether property exists

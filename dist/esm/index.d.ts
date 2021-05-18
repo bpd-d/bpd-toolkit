@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "1.0.0";
+export declare const BPD_TOOLKIT_VERSION = "1.1.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -57,7 +57,7 @@ export declare function isInRange(value: number, min: number, max: number): bool
 export declare function createElementFromString(htmlString: string): Element | null;
 /**
  * Creates object from JSON string
-* String must start with { and end with }
+ * String must start with { and end with }
  *
  * @param attribute - attribute value
  * @returns object if string passes test, null otherwise
@@ -142,7 +142,7 @@ export declare function throttle(callback: (...args: any[]) => void, throttleTim
  */
 export declare function throttleAsync<T>(callback: (...args: any[]) => T): (...args: any[]) => Promise<T>;
 /**
-* Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
+ * Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
  * @param callback - callback to execute
  * @param debounceTime - time amount in ms that execution shall be delayed by
  * @returns cancellation function

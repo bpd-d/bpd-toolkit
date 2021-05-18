@@ -103,13 +103,13 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit_1, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "1.0.0";
+const BPD_TOOLKIT_VERSION = "1.1.0";
 /**
  * Checks if value is undefined
  * @param val value
  */
 function isUndefined(val) {
-    return typeof val === 'undefined';
+    return typeof val === "undefined";
 }
 /**
  * Checks if value is null
@@ -177,7 +177,7 @@ function are(...attributes) {
  * @param timeout - timeout value in miliseconds
  */
 function sleep(timeout) {
-    return new Promise(resolve => setTimeout(() => {
+    return new Promise((resolve) => setTimeout(() => {
         resolve(true);
     }, timeout));
 }
@@ -225,20 +225,20 @@ function createElementFromString(htmlString) {
     if (!is(htmlString)) {
         return null;
     }
-    let template = document.createElement('template');
+    let template = document.createElement("template");
     template.innerHTML = htmlString;
     return template.content.firstElementChild;
 }
 /**
  * Creates object from JSON string
-* String must start with { and end with }
+ * String must start with { and end with }
  *
  * @param attribute - attribute value
  * @returns object if string passes test, null otherwise
  */
 function parseJsonString(attribute) {
     let out = null;
-    if (is(attribute) && attribute.startsWith('{') && attribute.endsWith('}')) {
+    if (is(attribute) && attribute.startsWith("{") && attribute.endsWith("}")) {
         out = jsonify(attribute);
         return out;
     }
@@ -277,7 +277,7 @@ function hasProperty(obj, fName) {
  * @param fName - property name
  */
 function hasFunction(obj, fName) {
-    return is(obj[fName]) && typeof obj[fName] === 'function';
+    return is(obj[fName]) && typeof obj[fName] === "function";
 }
 /**
  * Enumerate properties on the object an invokes callback for each one of them
@@ -458,7 +458,7 @@ function throttleAsync(callback) {
     };
 }
 /**
-* Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
+ * Debounce function - delays function execution by specfic time. Called again, break current execution and start new one
  * @param callback - callback to execute
  * @param debounceTime - time amount in ms that execution shall be delayed by
  * @returns cancellation function
@@ -537,7 +537,11 @@ function promisify(callback) {
  * @returns Copy of the collection with new item inserted at specific position
  */
 function insert(collection, index, ...t) {
-    if (!collection || collection === null || !t || t === null || t.length === 0) {
+    if (!collection ||
+        collection === null ||
+        !t ||
+        t === null ||
+        t.length === 0) {
         return collection;
     }
     let length = collection.length;
@@ -587,7 +591,18 @@ function generateGuid() {
     const S4 = function () {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
-    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    return (S4() +
+        S4() +
+        "-" +
+        S4() +
+        "-" +
+        S4() +
+        "-" +
+        S4() +
+        "-" +
+        S4() +
+        S4() +
+        S4());
 }
 /**
  * Generates random number from given min - max range with exclusion of items provided in options.
@@ -640,11 +655,13 @@ function openFullscreen(element) {
             return true;
         }
         let elementAny = element;
-        if (elementAny.webkitRequestFullscreen) { /* Safari */
+        if (elementAny.webkitRequestFullscreen) {
+            /* Safari */
             yield elementAny.webkitRequestFullscreen();
             return true;
         }
-        else if (elementAny.msRequestFullscreen) { /* IE11 */
+        else if (elementAny.msRequestFullscreen) {
+            /* IE11 */
             yield elementAny.msRequestFullscreen();
             return true;
         }
@@ -661,11 +678,13 @@ function closeFullscreen() {
             return true;
         }
         let anyDoc = document;
-        if (anyDoc.webkitExitFullscreen) { /* Safari */
+        if (anyDoc.webkitExitFullscreen) {
+            /* Safari */
             yield anyDoc.webkitExitFullscreen();
             return true;
         }
-        else if (anyDoc.msExitFullscreen) { /* IE11 */
+        else if (anyDoc.msExitFullscreen) {
+            /* IE11 */
             yield anyDoc.msExitFullscreen();
             return true;
         }
@@ -676,7 +695,9 @@ function isFullscreen(element) {
     if (!is(element)) {
         return false;
     }
-    return element && element.clientHeight >= ((screen.availHeight || screen.height) - 30) && element.clientWidth >= ((screen.availWidth || screen.width) - 30);
+    return (element &&
+        element.clientHeight >= (screen.availHeight || screen.height) - 30 &&
+        element.clientWidth >= (screen.availWidth || screen.width) - 30);
 }
 /**
  * Stores number of historical elements, allows for undo and redo objects

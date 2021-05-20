@@ -89,6 +89,8 @@ function getCallbackForField(field, value) {
             return match(value);
         case "type":
             return ofType(value);
+        case "compare":
+            return compare(value);
         case "range": {
             if (!Array.isArray(value) || value.length < 2) {
                 return undefined;
@@ -117,6 +119,12 @@ function exists(message) {
 /**
  * Validator callbacks
  */
+/**
+ * Check whether value (or length) is larger or equal to comapre
+ * @param minVal value to comapre with current field
+ * @param message
+ * @returns
+ */
 export function min(minVal, message) {
     if (typeof minVal !== "number") {
         throw new ValidateFunctionError("min", "Input param is incorrect");
@@ -129,6 +137,12 @@ export function min(minVal, message) {
         },
     };
 }
+/**
+ * Check whether value (or length) is smaller or equal to value
+ * @param maxVal - value to compare current field with
+ * @param message
+ * @returns
+ */
 export function max(maxVal, message) {
     if (typeof maxVal !== "number") {
         throw new ValidateFunctionError("max", "Input param is incorrect");
@@ -141,6 +155,31 @@ export function max(maxVal, message) {
         },
     };
 }
+/**
+ * Compares whether values of two fields are equal
+ * @param fieldName field to compare with current
+ * @param message
+ * @returns
+ */
+export function compare(fieldName, message) {
+    if (typeof fieldName !== "string") {
+        throw new ValidateFunctionError("compare", "Input param is incorrect");
+    }
+    return {
+        name: "compare",
+        failMessage: message !== null && message !== void 0 ? message : "Is different than " + fieldName,
+        callback: (obj, name, parent) => {
+            return parent[fieldName] === obj;
+        },
+    };
+}
+/**
+ * Checks if value is within the range (for strings and array length is compared)
+ * @param {Number} minVal - minmum range value
+ * @param {Number} maxVal - max range value
+ * @param {String} message
+ * @returns
+ */
 export function range(minVal, maxVal, message) {
     if (typeof maxVal !== "number" || typeof minVal !== "number") {
         throw new ValidateFunctionError("range", "Incorrect input params");
@@ -157,6 +196,12 @@ export function range(minVal, maxVal, message) {
         },
     };
 }
+/**
+ * Matches field value with compare string or regex
+ * @param {String | RegExp} compare
+ * @param {String} message
+ * @returns
+ */
 export function match(compare, message) {
     return {
         name: "match",
@@ -172,6 +217,12 @@ export function match(compare, message) {
         },
     };
 }
+/**
+ * Checks if field value equals to compare
+ * @param {any} compare Value to compore field with
+ * @param {String} message
+ * @returns
+ */
 export function equal(compare, message) {
     return {
         name: "equal",
@@ -181,6 +232,12 @@ export function equal(compare, message) {
         },
     };
 }
+/**
+ * Check if field value is of expected type
+ * @param {String} typeString - exprected type of the field
+ * @param {String} message
+ * @returns
+ */
 export function ofType(typeString, message) {
     return {
         name: "ofType",
@@ -191,7 +248,7 @@ export function ofType(typeString, message) {
     };
 }
 ////////////////////////////////
-export function validateSingleValue(prop, value, callbacks, options) {
+export function validateSingleValue(prop, value, parent, callbacks, options) {
     const helper = validationErrorHelper(prop);
     const shallContinue = options === null || options === void 0 ? void 0 : options.checkAll;
     const validators = [exists(), ...callbacks];
@@ -199,7 +256,7 @@ export function validateSingleValue(prop, value, callbacks, options) {
     for (let i = 0; i < vLen; i++) {
         const validator = validators[i];
         try {
-            if (!validator.callback(value)) {
+            if (!validator.callback(value, prop, parent)) {
                 helper.add(validator.name, validator.failMessage);
                 if (!shallContinue)
                     break;
@@ -221,7 +278,7 @@ export function validate(object, schema, options) {
     const helper = validationResultsHelper();
     for (let prop in schema) {
         const value = object[prop];
-        const singleRes = validateSingleValue(prop, value, schema[prop], options);
+        const singleRes = validateSingleValue(prop, value, object, schema[prop], options);
         if (singleRes.result) {
             helper.setProp(prop, value);
         }

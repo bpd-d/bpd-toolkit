@@ -1,5 +1,11 @@
 # bpd toolkit
 
+# [1.2.0] 2021-05-20
+
+-   [Added] Validator function that compare value of choosen field with current
+-   [Added] ValidatorCallback has been enhanced by current field name and parent object
+-   [Changed] Some adjustment related to types in Validator
+
 # [1.1.0] 2021-05-18
 
 -   [Added] Object validation tool with set of methods and schema

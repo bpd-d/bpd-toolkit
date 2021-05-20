@@ -104,7 +104,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit_1, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "1.2.0";
+const BPD_TOOLKIT_VERSION = "1.3.0";
 /**
  * Checks if value is undefined
  * @param val value

@@ -206,7 +206,7 @@ Library provides following list of validation methods:
 -   `range(minVal: number, maxVal: number, ,message?: string)` - range between min and max length or value of the object - for number compares value, arrays and string length, otherwise is tries to covert value to number. Optionally custom fail message.
 
 -   `match(compare: string | RegExp, message?: string)` - performs match for strings, otherwise it calls **toString** then **match**. Optionally custom fail message.
-
+-   `compare(compareStr: string, message?: string)` - compares current value with other field value
 -   `equal(compare: any, message?: string)` - Check if value equals to **compare**. Performs **Object.is**. Optionally custom fail message.
 
 -   `ofType(typeString: string, message?: string)` - Check value agains **typeof** with given type string. Optionally custom fail message.

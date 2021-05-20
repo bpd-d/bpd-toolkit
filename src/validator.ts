@@ -23,19 +23,19 @@ export interface ValidationErrorStep {
 	name: string;
 }
 
-export interface ValidatonSchema {
-	[id: string]: ValidationCallback[];
+export interface ValidatonSchema<T> {
+	[id: string]: ValidationCallback<T>[];
 }
 
 export interface SchemaField<T> {
 	name: keyof T;
-	callbacks: ValidationCallback[];
+	callbacks: ValidationCallback<T>[];
 }
 
-export interface ValidationCallback {
+export interface ValidationCallback<T> {
 	name: string;
 	failMessage: string;
-	callback: (obj: any) => boolean;
+	callback: (obj: any, name: keyof T, parent: T) => boolean;
 }
 
 export interface SchemaFieldBuilderBase<T> {
@@ -43,23 +43,23 @@ export interface SchemaFieldBuilderBase<T> {
 }
 
 export interface SchemaFieldBuilder<T> extends SchemaFieldBuilderBase<T> {
-	set(...callbacks: ValidationCallback[]): SchemaFieldBuilder<T>;
+	set(...callbacks: ValidationCallback<T>[]): SchemaFieldBuilder<T>;
 }
 
-export interface SchemaBuilderBase {
-	build(): ValidatonSchema;
+export interface SchemaBuilderBase<T> {
+	build(): ValidatonSchema<T>;
 }
 
-export interface SchemaBuilder<T> extends SchemaBuilderBase {
-	set(name: keyof T, ...callbacks: ValidationCallback[]): SchemaBuilder<T>;
+export interface SchemaBuilder<T> extends SchemaBuilderBase<T> {
+	set(name: keyof T, ...callbacks: ValidationCallback<T>[]): SchemaBuilder<T>;
 	define(...fields: SchemaFieldBuilderBase<T>[]): SchemaBuilder<T>;
 }
 
-export interface SchemaStructure {
-	[id: string]: SchemaFieldStructure;
+export interface SchemaStructure<T> {
+	[id: string]: SchemaFieldStructure<T>;
 }
 
-export interface SchemaFieldStructure {
+export interface SchemaFieldStructure<T> {
 	min?: number | [number, string];
 	max?: number | [number, string];
 	range?: number[] | [number, number, string];
@@ -67,7 +67,8 @@ export interface SchemaFieldStructure {
 	required?: boolean | [boolean, string];
 	match?: string | RegExp | [string | RegExp, string];
 	equal?: any | any[];
-	custom?: ValidationCallback;
+	compare?: string;
+	custom?: ValidationCallback<T>;
 }
 
 // Errors
@@ -138,22 +139,24 @@ function validationResultsHelper<T extends V, V>(init?: T) {
 	};
 }
 
-function parseSchemaStructure(schema: SchemaStructure): ValidatonSchema {
-	const result: ValidatonSchema = {};
+function parseSchemaStructure<T>(
+	schema: SchemaStructure<T>
+): ValidatonSchema<T> {
+	const result: ValidatonSchema<T> = {};
 	for (let prop in schema) {
 		result[prop] = parseFieldStructure(schema[prop]);
 	}
 	return result;
 }
 
-function parseFieldStructure(
-	fieldDef: SchemaFieldStructure
-): ValidationCallback[] {
-	const callbacks: ValidationCallback[] = [];
+function parseFieldStructure<T>(
+	fieldDef: SchemaFieldStructure<T>
+): ValidationCallback<T>[] {
+	const callbacks: ValidationCallback<T>[] = [];
 	for (let field in fieldDef) {
-		const callback = getCallbackForField(
-			<keyof SchemaFieldStructure>field,
-			fieldDef[<keyof SchemaFieldStructure>field]
+		const callback = getCallbackForField<T>(
+			<keyof SchemaFieldStructure<T>>field,
+			fieldDef[<keyof SchemaFieldStructure<T>>field]
 		);
 
 		if (callback) {
@@ -163,10 +166,10 @@ function parseFieldStructure(
 	return callbacks;
 }
 
-function getCallbackForField(
-	field: keyof SchemaFieldStructure,
+function getCallbackForField<T>(
+	field: keyof SchemaFieldStructure<T>,
 	value: any
-): ValidationCallback | undefined {
+): ValidationCallback<T> | undefined {
 	switch (field) {
 		case "min":
 			return min(value);
@@ -178,6 +181,8 @@ function getCallbackForField(
 			return match(value);
 		case "type":
 			return ofType(value);
+		case "compare":
+			return compare(value);
 		case "range": {
 			if (!Array.isArray(value) || value.length < 2) {
 				return undefined;
@@ -209,7 +214,16 @@ function exists(message?: string) {
  * Validator callbacks
  */
 
-export function min(minVal: number, message?: string): ValidationCallback {
+/**
+ * Check whether value (or length) is larger or equal to comapre
+ * @param minVal value to comapre with current field
+ * @param message
+ * @returns
+ */
+export function min<T>(
+	minVal: number,
+	message?: string
+): ValidationCallback<T> {
 	if (typeof minVal !== "number") {
 		throw new ValidateFunctionError("min", "Input param is incorrect");
 	}
@@ -222,7 +236,16 @@ export function min(minVal: number, message?: string): ValidationCallback {
 	};
 }
 
-export function max(maxVal: number, message?: string): ValidationCallback {
+/**
+ * Check whether value (or length) is smaller or equal to value
+ * @param maxVal - value to compare current field with
+ * @param message
+ * @returns
+ */
+export function max<T>(
+	maxVal: number,
+	message?: string
+): ValidationCallback<T> {
 	if (typeof maxVal !== "number") {
 		throw new ValidateFunctionError("max", "Input param is incorrect");
 	}
@@ -235,11 +258,40 @@ export function max(maxVal: number, message?: string): ValidationCallback {
 	};
 }
 
-export function range(
+/**
+ * Compares whether values of two fields are equal
+ * @param fieldName field to compare with current
+ * @param message
+ * @returns
+ */
+export function compare<T>(
+	fieldName: string,
+	message?: string
+): ValidationCallback<T> {
+	if (typeof fieldName !== "string") {
+		throw new ValidateFunctionError("compare", "Input param is incorrect");
+	}
+	return {
+		name: "compare",
+		failMessage: message ?? "Is different than " + fieldName,
+		callback: (obj: any, name: keyof T, parent: T) => {
+			return (<any>parent)[fieldName] === obj;
+		},
+	};
+}
+
+/**
+ * Checks if value is within the range (for strings and array length is compared)
+ * @param {Number} minVal - minmum range value
+ * @param {Number} maxVal - max range value
+ * @param {String} message
+ * @returns
+ */
+export function range<T>(
 	minVal: number,
 	maxVal: number,
 	message?: string
-): ValidationCallback {
+): ValidationCallback<T> {
 	if (typeof maxVal !== "number" || typeof minVal !== "number") {
 		throw new ValidateFunctionError("range", "Incorrect input params");
 	}
@@ -256,10 +308,16 @@ export function range(
 	};
 }
 
-export function match(
+/**
+ * Matches field value with compare string or regex
+ * @param {String | RegExp} compare
+ * @param {String} message
+ * @returns
+ */
+export function match<T>(
 	compare: string | RegExp,
 	message?: string
-): ValidationCallback {
+): ValidationCallback<T> {
 	return {
 		name: "match",
 		failMessage: message ?? `Doesn't match to ${compare}`,
@@ -277,7 +335,16 @@ export function match(
 	};
 }
 
-export function equal(compare: any, message?: string) {
+/**
+ * Checks if field value equals to compare
+ * @param {any} compare Value to compore field with
+ * @param {String} message
+ * @returns
+ */
+export function equal<T>(
+	compare: any,
+	message?: string
+): ValidationCallback<T> {
 	return {
 		name: "equal",
 		failMessage: message ?? "Does not equal to " + compare,
@@ -287,7 +354,16 @@ export function equal(compare: any, message?: string) {
 	};
 }
 
-export function ofType(typeString: string, message?: string) {
+/**
+ * Check if field value is of expected type
+ * @param {String} typeString - exprected type of the field
+ * @param {String} message
+ * @returns
+ */
+export function ofType<T>(
+	typeString: string,
+	message?: string
+): ValidationCallback<T> {
 	return {
 		name: "ofType",
 		failMessage: message ?? "Type doesn't match to " + typeString,
@@ -299,13 +375,14 @@ export function ofType(typeString: string, message?: string) {
 
 ////////////////////////////////
 
-export function validateSingleValue(
-	prop: string,
+export function validateSingleValue<T>(
+	prop: keyof T,
 	value: any,
-	callbacks: ValidationCallback[],
+	parent: T,
+	callbacks: ValidationCallback<T>[],
 	options?: ValidationOptions
 ): ValidationResult {
-	const helper = validationErrorHelper(prop);
+	const helper = validationErrorHelper(prop as string);
 	const shallContinue = options?.checkAll;
 	const validators = [exists(), ...callbacks];
 	const vLen = validators.length;
@@ -313,7 +390,7 @@ export function validateSingleValue(
 	for (let i = 0; i < vLen; i++) {
 		const validator = validators[i];
 		try {
-			if (!validator.callback(value)) {
+			if (!validator.callback(value, prop, parent)) {
 				helper.add(validator.name, validator.failMessage);
 				if (!shallContinue) break;
 			}
@@ -332,7 +409,7 @@ export function validateSingleValue(
 
 export function validate<T extends V, V>(
 	object: any,
-	schema: ValidatonSchema,
+	schema: ValidatonSchema<V>,
 	options?: ValidationOptions
 ): ValidationResults<T> {
 	const helper = validationResultsHelper<T, V>();
@@ -341,6 +418,7 @@ export function validate<T extends V, V>(
 		const singleRes = validateSingleValue(
 			prop,
 			value,
+			object,
 			schema[prop],
 			options
 		);
@@ -358,12 +436,14 @@ export function validate<T extends V, V>(
 	return helper.get();
 }
 
-export function schema<T>(schemaStructure?: SchemaStructure): SchemaBuilder<T> {
-	const schema: ValidatonSchema = schemaStructure
+export function schema<T>(
+	schemaStructure?: SchemaStructure<T>
+): SchemaBuilder<T> {
+	const schema: ValidatonSchema<T> = schemaStructure
 		? parseSchemaStructure(schemaStructure)
 		: {};
 	const builder: SchemaBuilder<T> = {
-		set: (name: keyof T, ...callbacks: ValidationCallback[]) => {
+		set: (name: keyof T, ...callbacks: ValidationCallback<T>[]) => {
 			schema[name as string] = callbacks;
 			return builder;
 		},
@@ -382,9 +462,9 @@ export function schema<T>(schemaStructure?: SchemaStructure): SchemaBuilder<T> {
 }
 
 export function field<T>(name: keyof T): SchemaFieldBuilder<T> {
-	const callbacks: ValidationCallback[] = [];
+	const callbacks: ValidationCallback<T>[] = [];
 	const builder = {
-		set: (...validators: ValidationCallback[]) => {
+		set: (...validators: ValidationCallback<T>[]) => {
 			if (!validators) throw new Error("Callback not provided");
 			callbacks.push(...validators);
 			return builder;

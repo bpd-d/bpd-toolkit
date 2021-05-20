@@ -1,4 +1,4 @@
-export declare const BPD_TOOLKIT_VERSION = "1.1.0";
+export declare const BPD_TOOLKIT_VERSION = "1.2.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -180,6 +180,11 @@ export declare function move<T>(collection: T[], from: number, to: number, size?
  * Generates unique guid
  */
 export declare function generateGuid(): string;
+export interface BpdRandomStringOptions {
+    threshold?: number;
+    iterations?: number;
+}
+export declare function generateRandomString(length: number, dict: string, options?: BpdRandomStringOptions): string;
 export interface BpdRandomOptions {
     min?: number;
     max?: number;

@@ -74,6 +74,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "insert": () => (/* binding */ insert),
 /* harmony export */   "move": () => (/* binding */ move),
 /* harmony export */   "generateGuid": () => (/* binding */ generateGuid),
+/* harmony export */   "generateRandomString": () => (/* binding */ generateRandomString),
 /* harmony export */   "random": () => (/* binding */ random),
 /* harmony export */   "openFullscreen": () => (/* binding */ openFullscreen),
 /* harmony export */   "closeFullscreen": () => (/* binding */ closeFullscreen),
@@ -103,7 +104,7 @@ var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || 
     return privateMap.get(receiver);
 };
 var _id, _delay, _callback, _id_1, _delay_1, _callback_1, _limit_1, _undos, _redos;
-const BPD_TOOLKIT_VERSION = "1.1.0";
+const BPD_TOOLKIT_VERSION = "1.2.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -603,6 +604,37 @@ function generateGuid() {
         S4() +
         S4() +
         S4());
+}
+function generateRandomString(length, dict, options) {
+    var _a, _b;
+    function getRandom(len) {
+        return Math.floor(Math.random() * len);
+    }
+    function generateRandom(len, prevIdx, itCount, maxIterations, threshold) {
+        if (!itCount) {
+            itCount = 0;
+        }
+        const val = getRandom(len);
+        const diff = Math.abs(prevIdx - val);
+        if (diff / prevIdx < threshold && itCount < maxIterations) {
+            return generateRandom(len, prevIdx, itCount + 1, maxIterations, threshold);
+        }
+        return val;
+    }
+    const dictLen = dict.length;
+    if (length < 1 || dictLen < 10) {
+        throw new Error("Input arguments are incorrect");
+    }
+    const iterations = (_a = options === null || options === void 0 ? void 0 : options.iterations) !== null && _a !== void 0 ? _a : 10;
+    const threshold = (_b = options === null || options === void 0 ? void 0 : options.threshold) !== null && _b !== void 0 ? _b : 0;
+    let prevIdx = 0;
+    const result = [];
+    for (let i = 0; i < length; i++) {
+        const idx = generateRandom(dictLen, prevIdx, 0, iterations, threshold);
+        prevIdx = idx;
+        result.push(dict[idx]);
+    }
+    return result.join("");
 }
 /**
  * Generates random number from given min - max range with exclusion of items provided in options.

@@ -1,4 +1,4 @@
-export const BPD_TOOLKIT_VERSION = "1.1.0";
+export const BPD_TOOLKIT_VERSION = "1.2.0";
 /**
  * Checks if value is undefined
  * @param val value
@@ -546,6 +546,64 @@ export function generateGuid(): string {
 		S4() +
 		S4()
 	);
+}
+
+export interface BpdRandomStringOptions {
+	threshold?: number;
+	iterations?: number;
+}
+
+export function generateRandomString(
+	length: number,
+	dict: string,
+	options?: BpdRandomStringOptions
+): string {
+	function getRandom(len: number): number {
+		return Math.floor(Math.random() * len);
+	}
+
+	function generateRandom(
+		len: number,
+		prevIdx: number,
+		itCount: number,
+		maxIterations: number,
+		threshold: number
+	): number {
+		if (!itCount) {
+			itCount = 0;
+		}
+		const val = getRandom(len);
+		const diff = Math.abs(prevIdx - val);
+		if (diff / prevIdx < threshold && itCount < maxIterations) {
+			return generateRandom(
+				len,
+				prevIdx,
+				itCount + 1,
+				maxIterations,
+				threshold
+			);
+		}
+		return val;
+	}
+
+	const dictLen = dict.length;
+
+	if (length < 1 || dictLen < 10) {
+		throw new Error("Input arguments are incorrect");
+	}
+
+	const iterations = options?.iterations ?? 10;
+	const threshold = options?.threshold ?? 0;
+	let prevIdx = 0;
+	const result = [];
+
+	for (let i = 0; i < length; i++) {
+		const idx = generateRandom(dictLen, prevIdx, 0, iterations, threshold);
+		prevIdx = idx;
+		result.push(dict[idx]);
+	}
+
+	return result.join("");
 }
 
 export interface BpdRandomOptions {

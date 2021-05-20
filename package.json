@@ -1,6 +1,6 @@
 {
 	"name": "bpd-toolkit",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "Set of handy functions and shorthands",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

@@ -18,34 +18,18 @@ function getLength(obj) {
 function isExist(obj) {
     return typeof obj !== "undefined" && obj !== null;
 }
-function validationErrorHelper(prop) {
-    const validationError = {
-        prop: prop,
-        steps: [],
-    };
-    return {
-        add: (name, message) => {
-            validationError.steps.push({ name, message });
-        },
-        get: () => {
-            return validationError.steps.length === 0
-                ? undefined
-                : validationError;
-        },
-    };
-}
 function validationResultsHelper(init) {
     const validationRes = {
         result: true,
         data: init,
     };
     return {
-        add: (error) => {
+        add: (prop, errors) => {
             if (!validationRes.errors) {
-                validationRes.errors = [];
+                validationRes.errors = {};
             }
             validationRes.result = false;
-            validationRes.errors.push(error);
+            validationRes.errors[prop] = errors;
         },
         setProp: (prop, value) => {
             if (!validationRes.data)
@@ -78,42 +62,41 @@ function parseFieldStructure(fieldDef) {
     return callbacks;
 }
 function getCallbackForField(field, value) {
+    let argument = value;
+    let message = undefined;
+    if (Array.isArray(value)) {
+        [argument, message] = value;
+    }
     switch (field) {
         case "min":
-            return min(value);
+            return min(argument);
         case "max":
-            return max(value);
+            return max(argument);
         case "equal":
-            return equal(value);
+            return equal(argument);
         case "match":
-            return match(value);
+            return match(argument);
         case "type":
-            return ofType(value);
+            return ofType(argument);
         case "compare":
-            return compare(value);
+            return compare(argument);
         case "range": {
             if (!Array.isArray(value) || value.length < 2) {
                 return undefined;
             }
-            return range(value[0], value[1]);
-        }
-        case "custom": {
-            if (value && value["name"] && value["callback"]) {
-                return value;
-            }
-            return undefined;
+            message = value.length > 2 ? value[2] : undefined;
+            return range(value[0], value[1], message);
         }
         default:
             return undefined;
     }
 }
 function exists(message) {
-    return {
-        name: "exists",
-        failMessage: message !== null && message !== void 0 ? message : "Does not exist",
-        callback: (obj) => {
-            return isExist(obj);
-        },
+    return (obj) => {
+        return {
+            status: isExist(obj),
+            message: message !== null && message !== void 0 ? message : "Does not exist",
+        };
     };
 }
 /**
@@ -129,12 +112,11 @@ export function min(minVal, message) {
     if (typeof minVal !== "number") {
         throw new ValidateFunctionError("min", "Input param is incorrect");
     }
-    return {
-        name: "min",
-        failMessage: message !== null && message !== void 0 ? message : "Is lesser than " + minVal,
-        callback: (obj) => {
-            return getLength(obj) >= minVal;
-        },
+    return (obj) => {
+        return {
+            status: getLength(obj) >= minVal,
+            message: message !== null && message !== void 0 ? message : "Is lesser than " + minVal,
+        };
     };
 }
 /**
@@ -147,12 +129,11 @@ export function max(maxVal, message) {
     if (typeof maxVal !== "number") {
         throw new ValidateFunctionError("max", "Input param is incorrect");
     }
-    return {
-        name: "max",
-        failMessage: message !== null && message !== void 0 ? message : "Is greater than " + maxVal,
-        callback: (obj) => {
-            return getLength(obj) <= maxVal;
-        },
+    return (obj) => {
+        return {
+            status: getLength(obj) <= maxVal,
+            message: message !== null && message !== void 0 ? message : "Is greater than " + maxVal,
+        };
     };
 }
 /**
@@ -165,12 +146,11 @@ export function compare(fieldName, message) {
     if (typeof fieldName !== "string") {
         throw new ValidateFunctionError("compare", "Input param is incorrect");
     }
-    return {
-        name: "compare",
-        failMessage: message !== null && message !== void 0 ? message : "Is different than " + fieldName,
-        callback: (obj, name, parent) => {
-            return parent[fieldName] === obj;
-        },
+    return (obj, name, parent) => {
+        return {
+            status: parent[fieldName] === obj,
+            message: message !== null && message !== void 0 ? message : "Is different than " + fieldName,
+        };
     };
 }
 /**
@@ -187,13 +167,12 @@ export function range(minVal, maxVal, message) {
     if (minVal >= maxVal) {
         throw new ValidateFunctionError("range", "Incorrect range provided");
     }
-    return {
-        name: "range",
-        failMessage: message !== null && message !== void 0 ? message : `Doesn't match range ${minVal} and ${maxVal}`,
-        callback: (obj) => {
-            const len = getLength(obj);
-            return len >= minVal && len <= maxVal;
-        },
+    return (obj) => {
+        const len = getLength(obj);
+        return {
+            status: len >= minVal && len <= maxVal,
+            message: message !== null && message !== void 0 ? message : `Doesn't match range ${minVal} and ${maxVal}`,
+        };
     };
 }
 /**
@@ -203,18 +182,19 @@ export function range(minVal, maxVal, message) {
  * @returns
  */
 export function match(compare, message) {
-    return {
-        name: "match",
-        failMessage: message !== null && message !== void 0 ? message : `Doesn't match to ${compare}`,
-        callback: (obj) => {
-            if (!obj) {
-                return false;
-            }
-            const result = typeof obj === "string"
-                ? obj.match(compare)
-                : obj.toString().match(compare);
-            return result !== null && result.length > 0;
-        },
+    return (obj) => {
+        const resultObject = {
+            status: false,
+            message: message !== null && message !== void 0 ? message : `Doesn't match to ${compare}`,
+        };
+        if (!obj) {
+            return resultObject;
+        }
+        const matchResult = typeof obj === "string"
+            ? obj.match(compare)
+            : obj.toString().match(compare);
+        resultObject.status = matchResult !== null;
+        return resultObject;
     };
 }
 /**
@@ -224,12 +204,11 @@ export function match(compare, message) {
  * @returns
  */
 export function equal(compare, message) {
-    return {
-        name: "equal",
-        failMessage: message !== null && message !== void 0 ? message : "Does not equal to " + compare,
-        callback: (obj) => {
-            return Object.is(obj, compare);
-        },
+    return (obj) => {
+        return {
+            status: Object.is(obj, compare),
+            message: message !== null && message !== void 0 ? message : "Does not equal to " + compare,
+        };
     };
 }
 /**
@@ -239,52 +218,47 @@ export function equal(compare, message) {
  * @returns
  */
 export function ofType(typeString, message) {
-    return {
-        name: "ofType",
-        failMessage: message !== null && message !== void 0 ? message : "Type doesn't match to " + typeString,
-        callback: (obj) => {
-            return typeof obj === typeString;
-        },
+    return (obj) => {
+        return {
+            status: typeof obj === typeString,
+            message: message !== null && message !== void 0 ? message : "Type doesn't match to " + typeString,
+        };
     };
 }
 ////////////////////////////////
 export function validateSingleValue(prop, value, parent, callbacks, options) {
-    const helper = validationErrorHelper(prop);
+    var _a;
+    const errors = [];
     const shallContinue = options === null || options === void 0 ? void 0 : options.checkAll;
     const validators = [exists(), ...callbacks];
     const vLen = validators.length;
     for (let i = 0; i < vLen; i++) {
-        const validator = validators[i];
+        const validatorResult = validators[i](value, prop, parent);
         try {
-            if (!validator.callback(value, prop, parent)) {
-                helper.add(validator.name, validator.failMessage);
+            if (!validatorResult.status) {
+                errors.push((_a = validatorResult.message) !== null && _a !== void 0 ? _a : "Unknown error");
                 if (!shallContinue)
                     break;
             }
         }
         catch (err) {
-            helper.add(validator.name, `[Validator failure] ${err.message}`);
+            errors.push("[Internal] Validation callback error");
             if (!shallContinue)
                 break;
         }
     }
-    const fin = helper.get();
-    return {
-        result: fin === undefined,
-        error: fin,
-    };
+    return errors;
 }
 export function validate(object, schema, options) {
     const helper = validationResultsHelper();
     for (let prop in schema) {
         const value = object[prop];
         const singleRes = validateSingleValue(prop, value, object, schema[prop], options);
-        if (singleRes.result) {
+        if (singleRes.length === 0) {
             helper.setProp(prop, value);
         }
         else {
-            if (singleRes.error)
-                helper.add(singleRes.error);
+            helper.add(prop, singleRes);
             if (!(options === null || options === void 0 ? void 0 : options.checkAll)) {
                 break;
             }

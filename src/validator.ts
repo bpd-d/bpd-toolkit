@@ -5,7 +5,7 @@ export interface ValidationResult {
 
 export interface ValidationResults<T> {
 	result: boolean;
-	errors?: ValidationError[];
+	errors?: ValidationError;
 	data?: T;
 }
 
@@ -14,8 +14,7 @@ export interface ValidationOptions {
 }
 
 export interface ValidationError {
-	prop?: string;
-	steps: ValidationErrorStep[];
+	[id: string]: string[];
 }
 
 export interface ValidationErrorStep {
@@ -32,10 +31,21 @@ export interface SchemaField<T> {
 	callbacks: ValidationCallback<T>[];
 }
 
+// export interface ValidationCallback<T> {
+// 	name: string;
+// 	failMessage: string;
+// 	callback: (obj: any, name: keyof T, parent: T) => boolean;
+// }
+export interface ValidationCallbackResult {
+	status: boolean;
+	message?: string;
+}
 export interface ValidationCallback<T> {
-	name: string;
-	failMessage: string;
-	callback: (obj: any, name: keyof T, parent: T) => boolean;
+	(
+		currentValue: any,
+		currentProp: keyof T,
+		parent: T
+	): ValidationCallbackResult;
 }
 
 export interface SchemaFieldBuilderBase<T> {
@@ -67,7 +77,7 @@ export interface SchemaFieldStructure<T> {
 	required?: boolean | [boolean, string];
 	match?: string | RegExp | [string | RegExp, string];
 	equal?: any | any[];
-	compare?: string;
+	compare?: [string, string];
 	custom?: ValidationCallback<T>;
 }
 
@@ -96,35 +106,18 @@ function isExist(obj: any) {
 	return typeof obj !== "undefined" && obj !== null;
 }
 
-function validationErrorHelper(prop?: string) {
-	const validationError: ValidationError = {
-		prop: prop,
-		steps: [],
-	};
-	return {
-		add: (name: string, message: string) => {
-			validationError.steps.push({ name, message });
-		},
-		get: (): ValidationError | undefined => {
-			return validationError.steps.length === 0
-				? undefined
-				: validationError;
-		},
-	};
-}
-
 function validationResultsHelper<T extends V, V>(init?: T) {
 	const validationRes: ValidationResults<T> = {
 		result: true,
 		data: init,
 	};
 	return {
-		add: (error: ValidationError) => {
+		add: (prop: string, errors: string[]) => {
 			if (!validationRes.errors) {
-				validationRes.errors = [];
+				validationRes.errors = {};
 			}
 			validationRes.result = false;
-			validationRes.errors.push(error);
+			validationRes.errors[prop] = errors;
 		},
 		setProp: (prop: keyof T, value: any) => {
 			if (!validationRes.data) return;
@@ -170,43 +163,42 @@ function getCallbackForField<T>(
 	field: keyof SchemaFieldStructure<T>,
 	value: any
 ): ValidationCallback<T> | undefined {
+	let argument = value;
+	let message = undefined;
+	if (Array.isArray(value)) {
+		[argument, message] = value;
+	}
 	switch (field) {
 		case "min":
-			return min(value);
+			return min(argument);
 		case "max":
-			return max(value);
+			return max(argument);
 		case "equal":
-			return equal(value);
+			return equal(argument);
 		case "match":
-			return match(value);
+			return match(argument);
 		case "type":
-			return ofType(value);
+			return ofType(argument);
 		case "compare":
-			return compare(value);
+			return compare(argument);
 		case "range": {
 			if (!Array.isArray(value) || value.length < 2) {
 				return undefined;
 			}
-			return range(value[0], value[1]);
-		}
-		case "custom": {
-			if (value && value["name"] && value["callback"]) {
-				return value;
-			}
-			return undefined;
+			message = value.length > 2 ? value[2] : undefined;
+			return range(value[0], value[1], message);
 		}
 		default:
 			return undefined;
 	}
 }
 
-function exists(message?: string) {
-	return {
-		name: "exists",
-		failMessage: message ?? "Does not exist",
-		callback: (obj: any) => {
-			return isExist(obj);
-		},
+function exists<T>(message?: string): ValidationCallback<T> {
+	return (obj: any) => {
+		return {
+			status: isExist(obj),
+			message: message ?? "Does not exist",
+		};
 	};
 }
 
@@ -227,12 +219,11 @@ export function min<T>(
 	if (typeof minVal !== "number") {
 		throw new ValidateFunctionError("min", "Input param is incorrect");
 	}
-	return {
-		name: "min",
-		failMessage: message ?? "Is lesser than " + minVal,
-		callback: (obj: any) => {
-			return getLength(obj) >= minVal;
-		},
+	return (obj: any) => {
+		return {
+			status: getLength(obj) >= minVal,
+			message: message ?? "Is lesser than " + minVal,
+		};
 	};
 }
 
@@ -249,12 +240,11 @@ export function max<T>(
 	if (typeof maxVal !== "number") {
 		throw new ValidateFunctionError("max", "Input param is incorrect");
 	}
-	return {
-		name: "max",
-		failMessage: message ?? "Is greater than " + maxVal,
-		callback: (obj: any) => {
-			return getLength(obj) <= maxVal;
-		},
+	return (obj: any) => {
+		return {
+			status: getLength(obj) <= maxVal,
+			message: message ?? "Is greater than " + maxVal,
+		};
 	};
 }
 
@@ -271,12 +261,11 @@ export function compare<T>(
 	if (typeof fieldName !== "string") {
 		throw new ValidateFunctionError("compare", "Input param is incorrect");
 	}
-	return {
-		name: "compare",
-		failMessage: message ?? "Is different than " + fieldName,
-		callback: (obj: any, name: keyof T, parent: T) => {
-			return (<any>parent)[fieldName] === obj;
-		},
+	return (obj: any, name: keyof T, parent: T) => {
+		return {
+			status: (<any>parent)[fieldName] === obj,
+			message: message ?? "Is different than " + fieldName,
+		};
 	};
 }
 
@@ -298,13 +287,12 @@ export function range<T>(
 	if (minVal >= maxVal) {
 		throw new ValidateFunctionError("range", "Incorrect range provided");
 	}
-	return {
-		name: "range",
-		failMessage: message ?? `Doesn't match range ${minVal} and ${maxVal}`,
-		callback: (obj: any) => {
-			const len = getLength(obj);
-			return len >= minVal && len <= maxVal;
-		},
+	return (obj: any) => {
+		const len = getLength(obj);
+		return {
+			status: len >= minVal && len <= maxVal,
+			message: message ?? `Doesn't match range ${minVal} and ${maxVal}`,
+		};
 	};
 }
 
@@ -318,20 +306,23 @@ export function match<T>(
 	compare: string | RegExp,
 	message?: string
 ): ValidationCallback<T> {
-	return {
-		name: "match",
-		failMessage: message ?? `Doesn't match to ${compare}`,
-		callback: (obj: any) => {
-			if (!obj) {
-				return false;
-			}
-			const result =
-				typeof obj === "string"
-					? obj.match(compare)
-					: obj.toString().match(compare);
+	return (obj: any) => {
+		const resultObject = {
+			status: false,
+			message: message ?? `Doesn't match to ${compare}`,
+		};
 
-			return result !== null && result.length > 0;
-		},
+		if (!obj) {
+			return resultObject;
+		}
+
+		const matchResult =
+			typeof obj === "string"
+				? obj.match(compare)
+				: obj.toString().match(compare);
+		resultObject.status = matchResult !== null;
+
+		return resultObject;
 	};
 }
 
@@ -345,12 +336,11 @@ export function equal<T>(
 	compare: any,
 	message?: string
 ): ValidationCallback<T> {
-	return {
-		name: "equal",
-		failMessage: message ?? "Does not equal to " + compare,
-		callback: (obj: any) => {
-			return Object.is(obj, compare);
-		},
+	return (obj: any) => {
+		return {
+			status: Object.is(obj, compare),
+			message: message ?? "Does not equal to " + compare,
+		};
 	};
 }
 
@@ -364,12 +354,11 @@ export function ofType<T>(
 	typeString: string,
 	message?: string
 ): ValidationCallback<T> {
-	return {
-		name: "ofType",
-		failMessage: message ?? "Type doesn't match to " + typeString,
-		callback: (obj: any) => {
-			return typeof obj === typeString;
-		},
+	return (obj: any) => {
+		return {
+			status: typeof obj === typeString,
+			message: message ?? "Type doesn't match to " + typeString,
+		};
 	};
 }
 
@@ -381,30 +370,31 @@ export function validateSingleValue<T>(
 	parent: T,
 	callbacks: ValidationCallback<T>[],
 	options?: ValidationOptions
-): ValidationResult {
-	const helper = validationErrorHelper(prop as string);
+): string[] {
+	const errors: string[] = [];
 	const shallContinue = options?.checkAll;
 	const validators = [exists(), ...callbacks];
 	const vLen = validators.length;
 
 	for (let i = 0; i < vLen; i++) {
-		const validator = validators[i];
+		const validatorResult = (<ValidationCallback<T>>validators[i])(
+			value,
+			prop,
+			parent
+		);
 		try {
-			if (!validator.callback(value, prop, parent)) {
-				helper.add(validator.name, validator.failMessage);
+			if (!validatorResult.status) {
+				errors.push(validatorResult.message ?? "Unknown error");
+
 				if (!shallContinue) break;
 			}
 		} catch (err) {
-			helper.add(validator.name, `[Validator failure] ${err.message}`);
+			errors.push("[Internal] Validation callback error");
 			if (!shallContinue) break;
 		}
 	}
 
-	const fin = helper.get();
-	return {
-		result: fin === undefined,
-		error: fin,
-	};
+	return errors;
 }
 
 export function validate<T extends V, V>(
@@ -423,10 +413,10 @@ export function validate<T extends V, V>(
 			options
 		);
 
-		if (singleRes.result) {
+		if (singleRes.length === 0) {
 			helper.setProp(prop as any, value);
 		} else {
-			if (singleRes.error) helper.add(singleRes.error);
+			helper.add(prop, singleRes);
 			if (!options?.checkAll) {
 				break;
 			}

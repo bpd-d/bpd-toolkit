@@ -20,365 +20,365 @@ import {
 describe("Tests checking validation method [min]", () => {
 	it("Checks number larger than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback(4, null, null);
+		const res = minFn(4, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks number smaller than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback(2, null, null);
+		const res = minFn(2, null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks number equal to min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback(3, null, null);
+		const res = minFn(3, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string length larger than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback("xxxx", null, null);
+		const res = minFn("xxxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string length smaller than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback("xx", null, null);
+		const res = minFn("xx", null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks string equal to min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback("xxx", null, null);
+		const res = minFn("xxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array length larger than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback([1, 2, 3, 4], null, null);
+		const res = minFn([1, 2, 3, 4], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array length smaller than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback([1, 2], null, null);
+		const res = minFn([1, 2], null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks array equal to min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback([1, 2, 3], null, null);
+		const res = minFn([1, 2, 3], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks boolean length smaller than min", () => {
 		const minFn = min<any>(3);
-		const res = minFn.callback(true, null, null);
+		const res = minFn(true, null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 });
 
 describe("Tests checking validation method [max]", () => {
 	it("Checks number smaller than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback(4, null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn(4, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks number larger than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback(6, null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn(6, null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks number equal to max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback(5, null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn(5, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string smaller than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback("xxxx", null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn("xxxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string larger than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback("xxxxxxxx", null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn("xxxxxxxx", null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks string equal to max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback("xxxxx", null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn("xxxxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array smaller than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback([1, 2, 3, 4], null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn([1, 2, 3, 4], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array larger than max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback([1, 2, 3, 4, 5, 6, 7], null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn([1, 2, 3, 4, 5, 6, 7], null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks array equal to max", () => {
-		const minFn = max<any>(5);
-		const res = minFn.callback([1, 2, 3, 4, 5], null, null);
+		const maxFn = max<any>(5);
+		const res = maxFn([1, 2, 3, 4, 5], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 });
 
 describe("Tests checking validation method [range]", () => {
 	// Numbers
 	it("Checks number smaller than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback(1, null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn(1, null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks number larger than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback(6, null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn(6, null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks number equal to min range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback(2, null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn(2, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks number equal to max range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback(5, null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn(5, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks number within range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback(4, null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn(4, null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	// String
 
 	it("Checks string smaller than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback("x", null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn("x", null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks string larger than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback("xxxxxx", null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn("xxxxxx", null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks string equal to min range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback("xx", null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn("xx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string equal to max range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback("xxxxx", null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn("xxxxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks string within range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback("xxxx", null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn("xxxx", null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	// Arrays
 
 	it("Checks array smaller than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback([1], null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn([1], null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks array larger than range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback([1, 2, 3, 4, 5, 6], null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn([1, 2, 3, 4, 5, 6], null, null);
 
-		expect(res).toBeFalse();
+		expect(res.status).toBeFalse();
 	});
 
 	it("Checks array equal to min range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback([1, 2], null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn([1, 2], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array equal to max range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback([1, 2, 3, 4, 5], null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn([1, 2, 3, 4, 5], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 
 	it("Checks array within range", () => {
-		const minFn = range<any>(2, 5);
-		const res = minFn.callback([1, 2, 3, 4], null, null);
+		const rangeFn = range<any>(2, 5);
+		const res = rangeFn([1, 2, 3, 4], null, null);
 
-		expect(res).toBeTrue();
+		expect(res.status).toBeTrue();
 	});
 });
 
 describe("Tests checking validation method [equal]", () => {
 	it("Checks two equal numbers", () => {
 		const fnObj = equal<any>(2);
-		const result = fnObj.callback(2, null, null);
-		expect(result).toBeTrue();
+		const result = fnObj(2, null, null);
+		expect(result.status).toBeTrue();
 	});
 
 	it("Checks two different numbers", () => {
 		const fnObj = equal<any>(2);
-		const result = fnObj.callback(3, null, null);
-		expect(result).toBeFalse();
+		const result = fnObj(3, null, null);
+		expect(result.status).toBeFalse();
 	});
 
 	it("Checks two equal strings", () => {
 		const fnObj = equal<any>("x");
-		const result = fnObj.callback("x", null, null);
-		expect(result).toBeTrue();
+		const result = fnObj("x", null, null);
+		expect(result.status).toBeTrue();
 	});
 
 	it("Checks two different strings", () => {
 		const fnObj = equal<any>("x");
-		const result = fnObj.callback("xx", null, null);
-		expect(result).toBeFalse();
+		const result = fnObj("xx", null, null);
+		expect(result.status).toBeFalse();
 	});
 
 	it("Checks two equal booleans", () => {
 		const fnObj = equal<any>(true);
-		const result = fnObj.callback(true, null, null);
-		expect(result).toBeTrue();
+		const result = fnObj(true, null, null);
+		expect(result.status).toBeTrue();
 	});
 
 	it("Checks two different booleans", () => {
 		const fnObj = equal<any>(true);
-		const result = fnObj.callback(false, null, null);
-		expect(result).toBeFalse();
+		const result = fnObj(false, null, null);
+		expect(result.status).toBeFalse();
 	});
 
 	it("Checks two different arrays", () => {
 		const fnObj = equal<any>([1, 2]);
-		const result = fnObj.callback([1, 2, 3], null, null);
-		expect(result).toBeFalse();
+		const result = fnObj([1, 2, 3], null, null);
+		expect(result.status).toBeFalse();
 	});
 });
 
 describe("Tests checking validation method [ofType]", () => {
 	it("Returns true when type matches", () => {
 		const fnObj = ofType<any>("string");
-		const result = fnObj.callback("XX", null, null);
-		expect(result).toBeTrue();
+		const result = fnObj("XX", null, null);
+		expect(result.status).toBeTrue();
 	});
 
 	it("Returns false when type does not match", () => {
 		const fnObj = ofType<any>("boolean");
-		const result = fnObj.callback("XX", null, null);
-		expect(result).toBeFalse();
+		const result = fnObj("XX", null, null);
+		expect(result.status).toBeFalse();
 	});
 });
 
 describe("Tests checking validation method [match]", () => {
 	it("Matches string to string", () => {
 		const fnObj = match<any>("xx");
-		const result = fnObj.callback("xx", null, null);
+		const result = fnObj("xx", null, null);
 
-		expect(result).toBeTrue();
+		expect(result.status).toBeTrue();
 	});
 
 	it("Does not match string to string", () => {
 		const fnObj = match<any>("xxxx");
-		const result = fnObj.callback("xx", null, null);
+		const result = fnObj("xx", null, null);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 
 	it("Matches boolean to string", () => {
 		const fnObj = match<any>("true");
-		const result = fnObj.callback(true, null, null);
+		const result = fnObj(true, null, null);
 
-		expect(result).toBeTrue();
+		expect(result.status).toBeTrue();
 	});
 
 	it("Does not match boolean to string", () => {
 		const fnObj = match<any>("true");
-		const result = fnObj.callback(false, null, null);
+		const result = fnObj(false, null, null);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 
 	it("Matches Regex to string", () => {
 		const fnObj = match<any>(/x+y$/);
-		const result = fnObj.callback("xxy", null, null);
+		const result = fnObj("xxy", null, null);
 
-		expect(result).toBeTrue();
+		expect(result.status).toBeTrue();
 	});
 
 	it("Does not match Regex to string", () => {
 		const fnObj = match<any>(/x+y$/);
-		const result = fnObj.callback("xx", null, null);
+		const result = fnObj("xx", null, null);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 
 	it("Matches Regex to boolean", () => {
 		const fnObj = match<any>(/t..e$/);
-		const result = fnObj.callback(true, null, null);
+		const result = fnObj(true, null, null);
 
-		expect(result).toBeTrue();
+		expect(result.status).toBeTrue();
 	});
 
 	it("Does not match Regex to boolean", () => {
 		const fnObj = match<any>(/t..e$/);
-		const result = fnObj.callback(false, null, null);
+		const result = fnObj(false, null, null);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 });
 
@@ -391,23 +391,23 @@ describe("Tests checking method [compare]", () => {
 
 	it("Compares two fields with the same value", () => {
 		const fnObj = compare<any>("name2");
-		const result = fnObj.callback("name", "name", testObject);
+		const result = fnObj("name", "name", testObject);
 
-		expect(result).toBeTrue();
+		expect(result.status).toBeTrue();
 	});
 
 	it("Compares two fields with different values", () => {
 		const fnObj = compare<any>("lastname");
-		const result = fnObj.callback("name", "name", testObject);
+		const result = fnObj("name", "name", testObject);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 
 	it("Compares two fields with different values where comparable does not exist", () => {
 		const fnObj = compare<any>("xxx");
-		const result = fnObj.callback("name", "name", testObject);
+		const result = fnObj("name", "name", testObject);
 
-		expect(result).toBeFalse();
+		expect(result.status).toBeFalse();
 	});
 });
 
@@ -424,7 +424,7 @@ describe("Tests checking function [validateSingleValue]", () => {
 			validationCallbacks
 		);
 
-		expect(result.result).toBeTrue();
+		expect(result.length === 0).toBeTrue();
 	});
 
 	it("Returns false when at least one callback fails", () => {
@@ -436,9 +436,7 @@ describe("Tests checking function [validateSingleValue]", () => {
 			validationCallbacks
 		);
 
-		expect(result.result).toBeFalse();
-		expect(result.error).toBeDefined();
-		expect(result.error.steps.length).toEqual(1);
+		expect(result.length === 0).toBeFalse();
 	});
 
 	it("Breaks at first error", () => {
@@ -450,9 +448,7 @@ describe("Tests checking function [validateSingleValue]", () => {
 			validationCallbacks
 		);
 
-		expect(result.result).toBeFalse();
-		expect(result.error).toBeDefined();
-		expect(result.error.steps.length).toEqual(1);
+		expect(result.length === 1).toBeTrue();
 	});
 
 	it("Performs all checks when option is set", () => {
@@ -467,9 +463,7 @@ describe("Tests checking function [validateSingleValue]", () => {
 			}
 		);
 
-		expect(result.result).toBeFalse();
-		expect(result.error).toBeDefined();
-		expect(result.error.steps.length).toEqual(2);
+		expect(result.length > 1).toBeTrue();
 	});
 });
 
@@ -505,7 +499,7 @@ describe("Tests checking validation method [validateObject]", () => {
 
 		expect(result.result).toBeFalse();
 		expect(result.errors).toBeDefined();
-		expect(result.errors.length).toEqual(1);
+		expect(result.errors["name"].length).toEqual(1);
 	});
 
 	it("Performs validation of all props when checkAll is set", () => {
@@ -523,7 +517,6 @@ describe("Tests checking validation method [validateObject]", () => {
 
 		expect(result.result).toBeFalse();
 		expect(result.errors).toBeDefined();
-		expect(result.errors.length).toEqual(2);
 	});
 });
 
@@ -533,8 +526,6 @@ describe("Tests checking field builder", () => {
 		const built = sField.build();
 		expect(built.name).toEqual("x");
 		expect(built.callbacks.length).toEqual(2);
-		expect(built.callbacks[0].name).toEqual("ofType");
-		expect(built.callbacks[1].name).toEqual("min");
 	});
 });
 
@@ -555,13 +546,9 @@ describe("Tests checking schema builder", () => {
 
 		expect(built.x).toBeDefined();
 		expect(built.x.length).toEqual(2);
-		expect(built.x[0].name).toEqual("ofType");
-		expect(built.x[1].name).toEqual("min");
 
 		expect(built.y).toBeDefined();
 		expect(built.y.length).toEqual(2);
-		expect(built.y[0].name).toEqual("match");
-		expect(built.y[1].name).toEqual("range");
 	});
 
 	it("Creates schema from provided fields via method [define]", () => {
@@ -574,13 +561,9 @@ describe("Tests checking schema builder", () => {
 
 		expect(built.x).toBeDefined();
 		expect(built.x.length).toEqual(2);
-		expect(built.x[0].name).toEqual("ofType");
-		expect(built.x[1].name).toEqual("min");
 
 		expect(built.y).toBeDefined();
 		expect(built.y.length).toEqual(2);
-		expect(built.y[0].name).toEqual("match");
-		expect(built.y[1].name).toEqual("range");
 	});
 
 	it("Creates schema from provided fields via method [set]", () => {
@@ -592,12 +575,8 @@ describe("Tests checking schema builder", () => {
 
 		expect(built.x).toBeDefined();
 		expect(built.x.length).toEqual(2);
-		expect(built.x[0].name).toEqual("ofType");
-		expect(built.x[1].name).toEqual("min");
 
 		expect(built.y).toBeDefined();
 		expect(built.y.length).toEqual(2);
-		expect(built.y[0].name).toEqual("match");
-		expect(built.y[1].name).toEqual("range");
 	});
 });

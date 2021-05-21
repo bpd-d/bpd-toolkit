@@ -1,5 +1,9 @@
 # bpd toolkit
 
+# [1.4.0] 2021-05-21
+
+-   [Changed] Validator result schema
+
 # [1.2.0] 2021-05-20
 
 -   [Added] Validator function that compare value of choosen field with current

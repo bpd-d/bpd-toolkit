@@ -4,15 +4,14 @@ export interface ValidationResult {
 }
 export interface ValidationResults<T> {
     result: boolean;
-    errors?: ValidationError[];
+    errors?: ValidationError;
     data?: T;
 }
 export interface ValidationOptions {
     checkAll?: boolean;
 }
 export interface ValidationError {
-    prop?: string;
-    steps: ValidationErrorStep[];
+    [id: string]: string[];
 }
 export interface ValidationErrorStep {
     message: string;
@@ -25,10 +24,12 @@ export interface SchemaField<T> {
     name: keyof T;
     callbacks: ValidationCallback<T>[];
 }
+export interface ValidationCallbackResult {
+    status: boolean;
+    message?: string;
+}
 export interface ValidationCallback<T> {
-    name: string;
-    failMessage: string;
-    callback: (obj: any, name: keyof T, parent: T) => boolean;
+    (currentValue: any, currentProp: keyof T, parent: T): ValidationCallbackResult;
 }
 export interface SchemaFieldBuilderBase<T> {
     build(): SchemaField<T>;
@@ -54,7 +55,7 @@ export interface SchemaFieldStructure<T> {
     required?: boolean | [boolean, string];
     match?: string | RegExp | [string | RegExp, string];
     equal?: any | any[];
-    compare?: string;
+    compare?: [string, string];
     custom?: ValidationCallback<T>;
 }
 /**
@@ -110,7 +111,7 @@ export declare function equal<T>(compare: any, message?: string): ValidationCall
  * @returns
  */
 export declare function ofType<T>(typeString: string, message?: string): ValidationCallback<T>;
-export declare function validateSingleValue<T>(prop: keyof T, value: any, parent: T, callbacks: ValidationCallback<T>[], options?: ValidationOptions): ValidationResult;
+export declare function validateSingleValue<T>(prop: keyof T, value: any, parent: T, callbacks: ValidationCallback<T>[], options?: ValidationOptions): string[];
 export declare function validate<T extends V, V>(object: any, schema: ValidatonSchema<V>, options?: ValidationOptions): ValidationResults<T>;
 export declare function schema<T>(schemaStructure?: SchemaStructure<T>): SchemaBuilder<T>;
 export declare function field<T>(name: keyof T): SchemaFieldBuilder<T>;
